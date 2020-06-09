@@ -52,7 +52,7 @@ contract SmartVoucher is SignerRole {
         require(webshop != address(0), "create: invalid webshop address");
         require(amount > 0, "create: amount should be bigger then 0");
 
-        address signer = getSignerAddress(webshop, amount, nonce, signature);
+        address signer = getSignerAddress(amount, nonce, signature);
         require(signer == webshop, "create: signed data is not correct");
         require(_webshops[webshop].nonce == nonce, "create: nonce is not correct");
 
@@ -75,12 +75,12 @@ contract SmartVoucher is SignerRole {
     ) external onlySigner {
         require(webshop != address(0), "redeem: invalid webshop address");
         require(amount > 0, "redeem: amount should be bigger then 0");
-        require(voucherId > 0 && voucherId < _lastId, "redeem: invalid voucherId address");
+        require(voucherId >= 0 && voucherId < _lastId, "redeem: invalid voucherId address");
         require(_vouchers[voucherId].webshop == webshop, "redeem: the webshop doesn't own this voucher");
         require(_vouchers[voucherId].amount >= amount, "redeem: voucher amount is not enough");
         require(_vouchers[voucherId].nonce == nonce, "redeem: nonce is not correct");
 
-        address signer = getSignerAddress(webshop, amount, voucherId, nonce, signature);
+        address signer = getSignerAddress(amount, voucherId, nonce, signature);
         require(signer == webshop, "create: signed data is not correct");
 
         _vouchers[voucherId].nonce++;
@@ -99,14 +99,12 @@ contract SmartVoucher is SignerRole {
     }
 
     function getSignerAddress(
-        address webshop,
         uint256 amount,
         uint256 nonce,
         bytes memory signature
     ) public pure returns (address) {
         bytes32 dataHash = keccak256(
             abi.encodePacked(
-                webshop,
                 amount,
                 nonce
             )
@@ -117,7 +115,6 @@ contract SmartVoucher is SignerRole {
     }
 
     function getSignerAddress(
-        address webshop,
         uint256 amount,
         uint256 voucherId,
         uint256 nonce,
@@ -125,7 +122,6 @@ contract SmartVoucher is SignerRole {
     ) public pure returns (address) {
         bytes32 dataHash = keccak256(
             abi.encodePacked(
-                webshop,
                 amount,
                 voucherId,
                 nonce
