@@ -1,9 +1,11 @@
 pragma solidity ^0.5.0;
 
 import "./SafeMath.sol";
+import "./ECDSA.sol";
 import "./SignerRole.sol";
 
 contract SmartVoucher is SignerRole {
+    using ECDSA for bytes32;
     using SafeMath for uint256;
 
     uint256 private _lastId;
@@ -14,11 +16,12 @@ contract SmartVoucher is SignerRole {
         uint256 amount;
         uint256 initialAmount;
         uint256 createdAt;
+        uint256 nonce;
     }
 
     struct Webshop {
+        uint256 nonce;
         uint256 lastActivity;
-        uint256 vouchersCount;
         mapping(uint256 => uint256) vouchersById;
     }
 
@@ -40,31 +43,97 @@ contract SmartVoucher is SignerRole {
     // SETTERS
     //-------------
 
-    function create(address webshop, uint256 amount) external onlySigner {
+    function create(
+        address webshop,
+        uint256 amount,
+        uint256 nonce,
+        bytes calldata signature
+    ) external onlySigner {
         require(webshop != address(0), "create: invalid webshop address");
         require(amount > 0, "create: amount should be bigger then 0");
 
-        _vouchers[_lastId] = Voucher(_lastId, webshop, amount, amount, block.timestamp);
-        _webshops[webshop].vouchersById[_webshops[webshop].vouchersCount] = _lastId;
+        address signer = getSignerAddress(webshop, amount, nonce, signature);
+        require(signer == webshop, "create: signed data is not correct");
+        require(_webshops[webshop].nonce == nonce, "create: nonce is not correct");
+
+        _vouchers[_lastId] = Voucher(_lastId, webshop, amount, amount, block.timestamp, 0);
+        _webshops[webshop].vouchersById[_webshops[webshop].nonce] = _lastId;
         _webshops[webshop].lastActivity = block.timestamp;
 
         _lastId++;
-        _webshops[webshop].vouchersCount++;
+        _webshops[webshop].nonce++;
 
         emit VoucherCreated(webshop, amount, _vouchers[_lastId].id);
     }
 
-    function redeem(address webshop, uint256 amount, uint256 voucherId) external onlySigner {
+    function redeem(
+        address webshop,
+        uint256 amount,
+        uint256 voucherId,
+        uint256 nonce,
+        bytes calldata signature
+    ) external onlySigner {
         require(webshop != address(0), "redeem: invalid webshop address");
         require(amount > 0, "redeem: amount should be bigger then 0");
         require(voucherId > 0 && voucherId < _lastId, "redeem: invalid voucherId address");
         require(_vouchers[voucherId].webshop == webshop, "redeem: the webshop doesn't own this voucher");
         require(_vouchers[voucherId].amount >= amount, "redeem: voucher amount is not enough");
+        require(_vouchers[voucherId].nonce == nonce, "redeem: nonce is not correct");
 
+        address signer = getSignerAddress(webshop, amount, voucherId, nonce, signature);
+        require(signer == webshop, "create: signed data is not correct");
+
+        _vouchers[voucherId].nonce++;
         _vouchers[voucherId].amount = _vouchers[voucherId].amount.sub(amount);
         _webshops[webshop].lastActivity = block.timestamp;
 
         emit VoucherRedeemed(webshop, amount, _vouchers[voucherId].id);
+    }
+
+    // -----------------------------------------
+    // ECDSA GETTERS
+    // -----------------------------------------
+
+    function toEthSignedMessageHash(bytes32 hash) public pure returns (bytes32) {
+        return hash.toEthSignedMessageHash();
+    }
+
+    function getSignerAddress(
+        address webshop,
+        uint256 amount,
+        uint256 nonce,
+        bytes memory signature
+    ) public pure returns (address) {
+        bytes32 dataHash = keccak256(
+            abi.encodePacked(
+                webshop,
+                amount,
+                nonce
+            )
+        );
+
+        bytes32 message = ECDSA.toEthSignedMessageHash(dataHash);
+        return ECDSA.recover(message, signature);
+    }
+
+    function getSignerAddress(
+        address webshop,
+        uint256 amount,
+        uint256 voucherId,
+        uint256 nonce,
+        bytes memory signature
+    ) public pure returns (address) {
+        bytes32 dataHash = keccak256(
+            abi.encodePacked(
+                webshop,
+                amount,
+                voucherId,
+                nonce
+            )
+        );
+
+        bytes32 message = ECDSA.toEthSignedMessageHash(dataHash);
+        return ECDSA.recover(message, signature);
     }
 
     //-------------
@@ -80,7 +149,8 @@ contract SmartVoucher is SignerRole {
         address webshop,
         uint256 amount,
         uint256 initialAmount,
-        uint256 createdAt
+        uint256 createdAt,
+        uint256 nonce
     ) {
         Voucher memory voucher = _vouchers[voucherId];
         return (
@@ -88,17 +158,18 @@ contract SmartVoucher is SignerRole {
             voucher.webshop,
             voucher.amount,
             voucher.initialAmount,
-            voucher.createdAt
+            voucher.createdAt,
+            voucher.nonce
         );
     }
 
     function getWebshopData(address webshopAddr) external view returns (
-        uint256 vouchersCount,
+        uint256 nonce,
         uint256 lastActivity
     ) {
         Webshop memory webshop = _webshops[webshopAddr];
         return (
-            webshop.vouchersCount,
+            webshop.nonce,
             webshop.lastActivity
         );
     }
@@ -108,7 +179,8 @@ contract SmartVoucher is SignerRole {
         address webshop,
         uint256 amount,
         uint256 initialAmount,
-        uint256 createdAt
+        uint256 createdAt,
+        uint256 nonce
     ) {
         uint256 voucherId = _webshops[webshopAddr].vouchersById[order];
         return getVoucherData(voucherId);
