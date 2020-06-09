@@ -9,6 +9,7 @@
   "scripts": {
     "test": "truffle test --network development",
     "compile": "truffle compile",
+    "ganache": "ganache-cli --gas-price 0 -a 30 --mnemonic genre dress knee lounge expose flash cute valid hard define box outdoor ",
     "flat": "truffle-flattener ./contracts/SmartVoucher.sol > ./dist/SmartVoucher.sol",
     "build": "npm run compile && npm run flat",
     "deploy:development": "truffle deploy --reset --network development"
@@ -17,6 +18,7 @@
     "chai": "^4.2.0",
     "dotenv": "^8.2.0",
     "ethereumjs-abi": "^0.6.8",
+    "ganache-cli": "^6.9.1",
     "openzeppelin-test-helpers": "^0.5.1",
     "truffle": "^5.1.12",
     "truffle-flattener": "^1.4.2",
