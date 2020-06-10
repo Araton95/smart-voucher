@@ -517,7 +517,7 @@ contract SmartVoucher is SignerRole {
         require(_vouchers[voucherId].nonce == nonce, "redeem: nonce is not correct");
 
         address signer = getSignerAddress(amount, voucherId, nonce, signature);
-        require(signer == webshop, "create: signed data is not correct");
+        require(signer == webshop, "redeem: signed data is not correct");
 
         _vouchers[voucherId].nonce++;
         _vouchers[voucherId].amount = _vouchers[voucherId].amount.sub(amount);

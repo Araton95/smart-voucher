@@ -59,16 +59,11 @@ contract('Smart voucher contract tests', (accounts) => {
     describe('Create voucher validations', async () => {
         it('Check the webshop state before voucher creation', async () => {
             const isWebshop1Exist = await this.contractInstance.isWebshopExist(webshop1, ({ from: owner }))
-            const isWebshop2Exist = await this.contractInstance.isWebshopExist(webshop2, ({ from: owner }))
             const webshop1Data = await this.contractInstance.getWebshopData(webshop1, { from: owner })
-            const webshop2Data = await this.contractInstance.getWebshopData(webshop2, { from: owner })
 
             assert.deepEqual(isWebshop1Exist, false)
-            assert.deepEqual(isWebshop2Exist, false)
             assert.deepEqual(webshop1Data['nonce'].toString(), '0')
             assert.deepEqual(webshop1Data['lastActivity'].toString(), '0')
-            assert.deepEqual(webshop2Data['nonce'].toString(), '0')
-            assert.deepEqual(webshop2Data['lastActivity'].toString(), '0')
         })
 
         it('Webshop sign and create new voucher', async () => {
@@ -103,6 +98,19 @@ contract('Smart voucher contract tests', (accounts) => {
     })
 
     describe('Redeem voucher validations', async () => {
+        it('Check revert with other webshop signature', async () => {
+            // Values from previous test
+            const id = '0'
+            const nonce = '0'
+            const redeemAmount = ether('3').toString()
+            const signature = await signRedeemData(redeemAmount, id, nonce, webshop2PK)
+
+            await expectRevert(
+                this.contractInstance.redeem(webshop1, redeemAmount, id, nonce, signature, { from: signer }),
+                'redeem: signed data is not correct'
+            )
+        })
+
         it('Webshop sign and redeem voucher', async () => {
             const voucherData = await this.contractInstance.getVoucherByWebshop(webshop1, '0', { from: owner })
             const id = voucherData['id'].toString()
@@ -150,6 +158,47 @@ contract('Smart voucher contract tests', (accounts) => {
                 this.contractInstance.redeem(webshop1, wrongRedeemAmount, id, nonce, signature, { from: signer }),
                 'redeem: voucher amount is not enough'
             )
+        })
+    })
+
+    describe('Create voucher with another webshop validations', async () => {
+        it('Check the webshop state before voucher creation', async () => {
+            const isWebshop2Exist = await this.contractInstance.isWebshopExist(webshop2, ({ from: owner }))
+            const webshop2Data = await this.contractInstance.getWebshopData(webshop2, { from: owner })
+
+            assert.deepEqual(isWebshop2Exist, false)
+            assert.deepEqual(webshop2Data['nonce'].toString(), '0')
+            assert.deepEqual(webshop2Data['lastActivity'].toString(), '0')
+        })
+
+        it('Webshop sign and create new voucher', async () => {
+            const webshopData = await this.contractInstance.getWebshopData(webshop2, { from: webshop2 })
+            const nonce = webshopData['nonce'].toString()
+            const testAmount = ether('20').toString()
+
+            const signature = await signData(testAmount, nonce, webshop2PK)
+            const signerAddressByContract = await this.contractInstance.getSignerAddress(testAmount, nonce, signature)
+
+            assert.deepEqual(signerAddressByContract, webshop2)
+
+            await this.contractInstance.create(webshop2, testAmount, nonce, signature, { from: signer })
+        })
+
+        it('Check state after voucher creation', async () => {
+            const isWebshop2Exist = await this.contractInstance.isWebshopExist(webshop2, ({ from: owner }))
+            const webshop2Data = await this.contractInstance.getWebshopData(webshop2, { from: owner })
+
+            assert.deepEqual(isWebshop2Exist, true)
+            assert.deepEqual(webshop2Data['nonce'].toString(), '1')
+            assert.notDeepEqual(webshop2Data['lastActivity'].toString(), '0')
+
+            const voucherData = await this.contractInstance.getVoucherByWebshop(webshop2, '0', ({ from: owner}))
+            assert.deepEqual(voucherData['id'].toString(), '1')
+            assert.deepEqual(voucherData['webshop'], webshop2)
+            assert.deepEqual(voucherData['amount'].toString(), ether('20').toString())
+            assert.deepEqual(voucherData['initialAmount'].toString(), ether('20').toString())
+            assert.notDeepEqual(voucherData['createdAt'].toString(), '0')
+            assert.deepEqual(voucherData['nonce'].toString(), '0')
         })
     })
 })
