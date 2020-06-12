@@ -201,4 +201,22 @@ contract('Smart voucher contract tests', (accounts) => {
             assert.deepEqual(voucherData['nonce'].toString(), '0')
         })
     })
+
+    describe('Deep redeem transactions', async () => {
+        it('Redeem amount 100 times', async () => {
+            const redeemAmount = ether('0.01').toString()
+            for (let i = 0; i < 200; i++) {
+                const voucherData = await this.contractInstance.getVoucherByWebshop(webshop1, '0', { from: owner })
+                const id = voucherData['id'].toString()
+                const nonce = voucherData['nonce'].toString()
+                const currentAmount = voucherData['amount'].toString()
+
+                const signature = await signRedeemData(redeemAmount, id, nonce, webshop1PK)
+                await this.contractInstance.redeem(webshop1, redeemAmount, id, nonce, signature, { from: signer })
+
+                const updatedAmount = (await this.contractInstance.getVoucherByWebshop(webshop1, '0', { from: owner }))['amount'].toString()
+                assert.equal(parseInt(updatedAmount) + parseInt(redeemAmount), parseInt(currentAmount))
+            }
+        })
+    })
 })
