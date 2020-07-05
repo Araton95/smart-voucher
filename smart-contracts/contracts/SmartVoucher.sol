@@ -16,12 +16,16 @@ contract SmartVoucher is SignerRole {
         uint256 amount;
         uint256 initialAmount;
         uint256 createdAt;
-        uint256 nonce;
+        address lastRedeemedWebshop;
     }
 
     struct Webshop {
         uint256 nonce;
+        uint256 vouchersCount;
         uint256 lastActivity;
+        address[] partners;
+
+        mapping(address => bool) isPartner;
         mapping(uint256 => uint256) vouchersById;
     }
 
@@ -30,6 +34,8 @@ contract SmartVoucher is SignerRole {
 
     event VoucherCreated(address indexed webshop, uint256 indexed amount, uint256 indexed id);
     event VoucherRedeemed(address indexed webshop, uint256 indexed amount, uint256 indexed id);
+    event PartnerAdded(address indexed webshop, address partner);
+    event PartnerRemoved(address indexed webshop,address partner);
 
     //-------------
     // FALLBACK
@@ -56,12 +62,14 @@ contract SmartVoucher is SignerRole {
         require(signer == webshop, "create: signed data is not correct");
         require(_webshops[webshop].nonce == nonce, "create: nonce is not correct");
 
-        _vouchers[_lastId] = Voucher(_lastId, webshop, amount, amount, block.timestamp, 0);
-        _webshops[webshop].vouchersById[_webshops[webshop].nonce] = _lastId;
+        _webshops[webshop].nonce++;
+        _vouchers[_lastId] = Voucher(_lastId, webshop, amount, amount, block.timestamp, address(0));
+
+        _webshops[webshop].vouchersById[_webshops[webshop].vouchersCount] = _lastId;
+        _webshops[webshop].vouchersCount++;
         _webshops[webshop].lastActivity = block.timestamp;
 
         _lastId++;
-        _webshops[webshop].nonce++;
 
         emit VoucherCreated(webshop, amount, _vouchers[_lastId].id);
     }
@@ -76,18 +84,60 @@ contract SmartVoucher is SignerRole {
         require(webshop != address(0), "redeem: invalid webshop address");
         require(amount > 0, "redeem: amount should be bigger then 0");
         require(voucherId >= 0 && voucherId < _lastId, "redeem: invalid voucherId address");
-        require(_vouchers[voucherId].webshop == webshop, "redeem: the webshop doesn't own this voucher");
+        require(_vouchers[voucherId].webshop == webshop || _webshops[_vouchers[voucherId].webshop].isPartner[webshop], "redeem: not allowed webshop");
         require(_vouchers[voucherId].amount >= amount, "redeem: voucher amount is not enough");
-        require(_vouchers[voucherId].nonce == nonce, "redeem: nonce is not correct");
+        require(_webshops[webshop].nonce == nonce, "redeem: nonce is not correct");
 
         address signer = getSignerAddress(amount, voucherId, nonce, signature);
         require(signer == webshop, "redeem: signed data is not correct");
 
-        _vouchers[voucherId].nonce++;
+        _webshops[webshop].nonce++;
         _vouchers[voucherId].amount = _vouchers[voucherId].amount.sub(amount);
+        _vouchers[voucherId].lastRedeemedWebshop = webshop;
         _webshops[webshop].lastActivity = block.timestamp;
 
         emit VoucherRedeemed(webshop, amount, _vouchers[voucherId].id);
+    }
+
+    function togglePartner(
+        address webshop,
+        address partner,
+        uint256 nonce,
+        bytes calldata signature
+    ) external onlySigner {
+        require(webshop != address(0), "togglePartner: invalid webshop address");
+        require(partner != address(0), "togglePartner: invalid partner address");
+        require(_webshops[webshop].nonce == nonce, "redeem: nonce is not correct");
+
+        address signer = getSignerAddress(partner, nonce, signature);
+        require(signer == webshop, "redeem: signed data is not correct");
+
+        _webshops[webshop].nonce++;
+        Webshop storage ws = _webshops[webshop];
+
+        bool isPartner = ws.isPartner[partner];
+        ws.lastActivity = block.timestamp;
+
+        if (isPartner) {
+            // Remove partner from partners list
+            ws.isPartner[partner] = false;
+            for (uint256 index = 0; index < ws.partners.length; index++) {
+                if (ws.partners[index] == partner) {
+                    ws.partners[index] = ws.partners[ws.partners.length - 1];
+                    delete ws.partners[ws.partners.length - 1];
+                    ws.partners.length--;
+                    break;
+                }
+            }
+
+            emit PartnerRemoved(webshop, partner);
+        } else {
+            // Add partner to partners list
+            ws.isPartner[partner] = true;
+            ws.partners.push(partner);
+
+            emit PartnerAdded(webshop, partner);
+        }
     }
 
     // -----------------------------------------
@@ -132,6 +182,22 @@ contract SmartVoucher is SignerRole {
         return ECDSA.recover(message, signature);
     }
 
+    function getSignerAddress(
+        address partner,
+        uint256 nonce,
+        bytes memory signature
+    ) public pure returns (address) {
+        bytes32 dataHash = keccak256(
+            abi.encodePacked(
+                partner,
+                nonce
+            )
+        );
+
+        bytes32 message = ECDSA.toEthSignedMessageHash(dataHash);
+        return ECDSA.recover(message, signature);
+    }
+
     //-------------
     // GETTERS
     //-------------
@@ -146,7 +212,7 @@ contract SmartVoucher is SignerRole {
         uint256 amount,
         uint256 initialAmount,
         uint256 createdAt,
-        uint256 nonce
+        address lastRedeemedWebshop
     ) {
         Voucher memory voucher = _vouchers[voucherId];
         return (
@@ -155,18 +221,22 @@ contract SmartVoucher is SignerRole {
             voucher.amount,
             voucher.initialAmount,
             voucher.createdAt,
-            voucher.nonce
+            voucher.lastRedeemedWebshop
         );
     }
 
     function getWebshopData(address webshopAddr) external view returns (
         uint256 nonce,
-        uint256 lastActivity
+        uint256 lastActivity,
+        address[] memory partners,
+        uint256 vouchersCount
     ) {
         Webshop memory webshop = _webshops[webshopAddr];
         return (
             webshop.nonce,
-            webshop.lastActivity
+            webshop.lastActivity,
+            webshop.partners,
+            webshop.vouchersCount
         );
     }
 
@@ -176,17 +246,24 @@ contract SmartVoucher is SignerRole {
         uint256 amount,
         uint256 initialAmount,
         uint256 createdAt,
-        uint256 nonce
+        address lastRedeemedWebshop
     ) {
         uint256 voucherId = _webshops[webshopAddr].vouchersById[order];
         return getVoucherData(voucherId);
     }
 
-    function isWebshopExist(address webshopAddr) external view returns (bool) {
-        return _webshops[webshopAddr].lastActivity > 0;
+    function isWebshopExist(address webshopAddr) external view returns (bool isExist) {
+        isExist = _webshops[webshopAddr].lastActivity > 0;
+        return isExist;
     }
 
-    function isVoucherOwnedByWebshop(address webshopAddr, uint256 voucherId) external view returns (bool) {
-        return _vouchers[voucherId].webshop == webshopAddr;
+    function isWebshopPartner(address webshop, address partner) external view returns (bool isPartner) {
+        isPartner = _webshops[webshop].isPartner[partner];
+        return isPartner;
+    }
+
+    function isVoucherOwnedByWebshop(address webshopAddr, uint256 voucherId) external view returns (bool isOwned) {
+        isOwned = _vouchers[voucherId].webshop == webshopAddr;
+        return isOwned;
     }
 }
