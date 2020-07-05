@@ -1,0 +1,52 @@
+{
+  "routes": [
+    {
+      "method": "GET",
+      "path": "/webshops",
+      "handler": "webshop.find",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/webshops/count",
+      "handler": "webshop.count",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/webshops/:id",
+      "handler": "webshop.findOne",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/webshops",
+      "handler": "webshop.create",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "PUT",
+      "path": "/webshops/:id",
+      "handler": "webshop.update",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "DELETE",
+      "path": "/webshops/:id",
+      "handler": "webshop.delete",
+      "config": {
+        "policies": []
+      }
+    }
+  ]
+}

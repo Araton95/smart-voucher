@@ -1,0 +1,31 @@
+{
+  "kind": "collectionType",
+  "collectionName": "webshops",
+  "info": {
+    "name": "Webshop"
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true
+  },
+  "attributes": {
+    "wallet": {
+      "type": "string",
+      "required": true,
+      "unique": true,
+      "maxLength": 42,
+      "minLength": 42
+    },
+    "url": {
+      "type": "string",
+      "required": true,
+      "unique": true,
+      "maxLength": 63,
+      "minLength": 3
+    },
+    "enabled": {
+      "type": "boolean",
+      "default": true
+    }
+  }
+}
