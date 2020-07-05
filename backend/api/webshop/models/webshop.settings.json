@@ -23,7 +23,7 @@
       "maxLength": 63,
       "minLength": 3
     },
-    "enabled": {
+    "blocked": {
       "type": "boolean",
       "default": true
     }
