@@ -99,7 +99,7 @@ contract SmartVoucher is SignerRole {
         emit VoucherRedeemed(webshop, amount, _vouchers[voucherId].id);
     }
 
-    function togglePartner(
+    function addPartner(
         address webshop,
         address partner,
         uint256 nonce,
@@ -115,29 +115,44 @@ contract SmartVoucher is SignerRole {
         _webshops[webshop].nonce++;
         Webshop storage ws = _webshops[webshop];
 
-        bool isPartner = ws.isPartner[partner];
+
+        // Add partner to partners list
+        ws.isPartner[partner] = true;
+        ws.partners.push(partner);
         ws.lastActivity = block.timestamp;
 
-        if (isPartner) {
-            // Remove partner from partners list
-            ws.isPartner[partner] = false;
-            for (uint256 index = 0; index < ws.partners.length; index++) {
-                if (ws.partners[index] == partner) {
-                    ws.partners[index] = ws.partners[ws.partners.length - 1];
-                    delete ws.partners[ws.partners.length - 1];
-                    ws.partners.length--;
-                    break;
-                }
+        emit PartnerAdded(webshop, partner);
+    }
+
+    function removePartner(
+        address webshop,
+        address partner,
+        uint256 nonce,
+        bytes calldata signature
+    ) external onlySigner {
+        require(webshop != address(0), "togglePartner: invalid webshop address");
+        require(partner != address(0), "togglePartner: invalid partner address");
+        require(_webshops[webshop].nonce == nonce, "redeem: nonce is not correct");
+
+        address signer = getSignerAddress(partner, nonce, signature);
+        require(signer == webshop, "redeem: signed data is not correct");
+
+        _webshops[webshop].nonce++;
+        Webshop storage ws = _webshops[webshop];
+
+        // Remove partner from partners list
+        ws.isPartner[partner] = false;
+        for (uint256 index = 0; index < ws.partners.length; index++) {
+            if (ws.partners[index] == partner) {
+                ws.partners[index] = ws.partners[ws.partners.length - 1];
+                delete ws.partners[ws.partners.length - 1];
+                ws.partners.length--;
+                break;
             }
-
-            emit PartnerRemoved(webshop, partner);
-        } else {
-            // Add partner to partners list
-            ws.isPartner[partner] = true;
-            ws.partners.push(partner);
-
-            emit PartnerAdded(webshop, partner);
         }
+        ws.lastActivity = block.timestamp;
+
+        emit PartnerRemoved(webshop, partner);
     }
 
     // -----------------------------------------

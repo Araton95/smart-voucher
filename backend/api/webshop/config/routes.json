@@ -33,6 +33,22 @@
       }
     },
     {
+      "method": "POST",
+      "path": "/webshops/addPartner",
+      "handler": "webshop.addPartner",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/webshops/removePartner",
+      "handler": "webshop.removePartner",
+      "config": {
+        "policies": []
+      }
+    },
+    {
       "method": "PUT",
       "path": "/webshops/:id",
       "handler": "webshop.update",

@@ -46,12 +46,20 @@ contract('Smart voucher contract tests', (accounts) => {
         return sig.signature
     }
 
-    const togglePartner = async (webshop, partner, signerPk) => {
+    const addPartner = async (webshop, partner, signerPk) => {
         const webshopData = await this.contractInstance.getWebshopData(webshop, { from: webshop })
         const nonce = webshopData['nonce'].toString()
 
         const signature = await signPartnerData(partner, nonce, signerPk)
-        await this.contractInstance.togglePartner(webshop, partner, nonce, signature, { from: signer })
+        await this.contractInstance.addPartner(webshop, partner, nonce, signature, { from: signer })
+    }
+
+    const removePartner = async (webshop, partner, signerPk) => {
+        const webshopData = await this.contractInstance.getWebshopData(webshop, { from: webshop })
+        const nonce = webshopData['nonce'].toString()
+
+        const signature = await signPartnerData(partner, nonce, signerPk)
+        await this.contractInstance.removePartner(webshop, partner, nonce, signature, { from: signer })
     }
 
     const redeemVoucher = async (webshop, amount, voucherId, signerPk) => {
@@ -195,7 +203,7 @@ contract('Smart voucher contract tests', (accounts) => {
 
         it('Add a new partner', async () => {
             const partner = webshop2
-            await togglePartner(webshop1, partner, webshop1PK)
+            await addPartner(webshop1, partner, webshop1PK)
         })
 
         it('Check state after adding partner', async () => {
@@ -208,7 +216,7 @@ contract('Smart voucher contract tests', (accounts) => {
         it('Add multiply partners', async () => {
             for (let i = 4; i < 10; i++) {
                 const partner = accounts[i]
-                await togglePartner(webshop1, partner, webshop1PK)
+                await addPartner(webshop1, partner, webshop1PK)
             }
         })
 
@@ -219,7 +227,7 @@ contract('Smart voucher contract tests', (accounts) => {
 
         it('Remove middle partner', async () => {
             const partner = accounts[6]
-            await togglePartner(webshop1, partner, webshop1PK)
+            await removePartner(webshop1, partner, webshop1PK)
         })
 
         it('Check state after removing certain partner', async () => {
@@ -232,7 +240,7 @@ contract('Smart voucher contract tests', (accounts) => {
 
         it('Add removed partner and check the state', async () => {
             const partner = accounts[6]
-            await togglePartner(webshop1, partner, webshop1PK)
+            await addPartner(webshop1, partner, webshop1PK)
 
             const isPartner = await this.contractInstance.isWebshopPartner(webshop1, partner, { from: owner })
             const { partners } = await this.contractInstance.getWebshopData(webshop1, { from: owner })
@@ -292,7 +300,7 @@ contract('Smart voucher contract tests', (accounts) => {
 
         it('Remove partner and check his redeem action', async () => {
             const partner = webshop2
-            await togglePartner(webshop1, partner, webshop1PK)
+            await removePartner(webshop1, partner, webshop1PK)
 
             const voucherData = await this.contractInstance.getVoucherByWebshop(webshop1, '0', { from: owner })
             const webshopData = await this.contractInstance.getWebshopData(webshop2, { from: owner })

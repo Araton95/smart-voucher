@@ -1,0 +1,633 @@
+[
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "webshop",
+				"type": "address"
+			},
+			{
+				"name": "partner",
+				"type": "address"
+			}
+		],
+		"name": "isWebshopPartner",
+		"outputs": [
+			{
+				"name": "isPartner",
+				"type": "bool"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "webshopAddr",
+				"type": "address"
+			},
+			{
+				"name": "voucherId",
+				"type": "uint256"
+			}
+		],
+		"name": "isVoucherOwnedByWebshop",
+		"outputs": [
+			{
+				"name": "isOwned",
+				"type": "bool"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "webshop",
+				"type": "address"
+			},
+			{
+				"name": "partner",
+				"type": "address"
+			},
+			{
+				"name": "nonce",
+				"type": "uint256"
+			},
+			{
+				"name": "signature",
+				"type": "bytes"
+			}
+		],
+		"name": "removePartner",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "account",
+				"type": "address"
+			}
+		],
+		"name": "isOwner",
+		"outputs": [
+			{
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [],
+		"name": "renounceOwnership",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "account",
+				"type": "address"
+			}
+		],
+		"name": "renounceSigner",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "voucherId",
+				"type": "uint256"
+			}
+		],
+		"name": "getVoucherData",
+		"outputs": [
+			{
+				"name": "id",
+				"type": "uint256"
+			},
+			{
+				"name": "webshop",
+				"type": "address"
+			},
+			{
+				"name": "amount",
+				"type": "uint256"
+			},
+			{
+				"name": "initialAmount",
+				"type": "uint256"
+			},
+			{
+				"name": "createdAt",
+				"type": "uint256"
+			},
+			{
+				"name": "lastRedeemedWebshop",
+				"type": "address"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "account",
+				"type": "address"
+			}
+		],
+		"name": "isSigner",
+		"outputs": [
+			{
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "owner",
+		"outputs": [
+			{
+				"name": "",
+				"type": "address"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "hash",
+				"type": "bytes32"
+			}
+		],
+		"name": "toEthSignedMessageHash",
+		"outputs": [
+			{
+				"name": "",
+				"type": "bytes32"
+			}
+		],
+		"payable": false,
+		"stateMutability": "pure",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "amount",
+				"type": "uint256"
+			},
+			{
+				"name": "nonce",
+				"type": "uint256"
+			},
+			{
+				"name": "signature",
+				"type": "bytes"
+			}
+		],
+		"name": "getSignerAddress",
+		"outputs": [
+			{
+				"name": "",
+				"type": "address"
+			}
+		],
+		"payable": false,
+		"stateMutability": "pure",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "webshopAddr",
+				"type": "address"
+			},
+			{
+				"name": "order",
+				"type": "uint256"
+			}
+		],
+		"name": "getVoucherByWebshop",
+		"outputs": [
+			{
+				"name": "id",
+				"type": "uint256"
+			},
+			{
+				"name": "webshop",
+				"type": "address"
+			},
+			{
+				"name": "amount",
+				"type": "uint256"
+			},
+			{
+				"name": "initialAmount",
+				"type": "uint256"
+			},
+			{
+				"name": "createdAt",
+				"type": "uint256"
+			},
+			{
+				"name": "lastRedeemedWebshop",
+				"type": "address"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "getLastId",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "partner",
+				"type": "address"
+			},
+			{
+				"name": "nonce",
+				"type": "uint256"
+			},
+			{
+				"name": "signature",
+				"type": "bytes"
+			}
+		],
+		"name": "getSignerAddress",
+		"outputs": [
+			{
+				"name": "",
+				"type": "address"
+			}
+		],
+		"payable": false,
+		"stateMutability": "pure",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "webshop",
+				"type": "address"
+			},
+			{
+				"name": "partner",
+				"type": "address"
+			},
+			{
+				"name": "nonce",
+				"type": "uint256"
+			},
+			{
+				"name": "signature",
+				"type": "bytes"
+			}
+		],
+		"name": "addPartner",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "webshop",
+				"type": "address"
+			},
+			{
+				"name": "amount",
+				"type": "uint256"
+			},
+			{
+				"name": "nonce",
+				"type": "uint256"
+			},
+			{
+				"name": "signature",
+				"type": "bytes"
+			}
+		],
+		"name": "create",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "webshop",
+				"type": "address"
+			},
+			{
+				"name": "amount",
+				"type": "uint256"
+			},
+			{
+				"name": "voucherId",
+				"type": "uint256"
+			},
+			{
+				"name": "nonce",
+				"type": "uint256"
+			},
+			{
+				"name": "signature",
+				"type": "bytes"
+			}
+		],
+		"name": "redeem",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "webshopAddr",
+				"type": "address"
+			}
+		],
+		"name": "isWebshopExist",
+		"outputs": [
+			{
+				"name": "isExist",
+				"type": "bool"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "amount",
+				"type": "uint256"
+			},
+			{
+				"name": "voucherId",
+				"type": "uint256"
+			},
+			{
+				"name": "nonce",
+				"type": "uint256"
+			},
+			{
+				"name": "signature",
+				"type": "bytes"
+			}
+		],
+		"name": "getSignerAddress",
+		"outputs": [
+			{
+				"name": "",
+				"type": "address"
+			}
+		],
+		"payable": false,
+		"stateMutability": "pure",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "account",
+				"type": "address"
+			}
+		],
+		"name": "addSigner",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "newOwner",
+				"type": "address"
+			}
+		],
+		"name": "transferOwnership",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "webshopAddr",
+				"type": "address"
+			}
+		],
+		"name": "getWebshopData",
+		"outputs": [
+			{
+				"name": "nonce",
+				"type": "uint256"
+			},
+			{
+				"name": "lastActivity",
+				"type": "uint256"
+			},
+			{
+				"name": "partners",
+				"type": "address[]"
+			},
+			{
+				"name": "vouchersCount",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"payable": true,
+		"stateMutability": "payable",
+		"type": "fallback"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"name": "webshop",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"name": "amount",
+				"type": "uint256"
+			},
+			{
+				"indexed": true,
+				"name": "id",
+				"type": "uint256"
+			}
+		],
+		"name": "VoucherCreated",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"name": "webshop",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"name": "amount",
+				"type": "uint256"
+			},
+			{
+				"indexed": true,
+				"name": "id",
+				"type": "uint256"
+			}
+		],
+		"name": "VoucherRedeemed",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"name": "webshop",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"name": "partner",
+				"type": "address"
+			}
+		],
+		"name": "PartnerAdded",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"name": "webshop",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"name": "partner",
+				"type": "address"
+			}
+		],
+		"name": "PartnerRemoved",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"name": "account",
+				"type": "address"
+			}
+		],
+		"name": "SignerAdded",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"name": "account",
+				"type": "address"
+			}
+		],
+		"name": "SignerRemoved",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"name": "previousOwner",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"name": "newOwner",
+				"type": "address"
+			}
+		],
+		"name": "OwnershipTransferred",
+		"type": "event"
+	}
+]

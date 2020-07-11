@@ -6,17 +6,18 @@
   },
   "options": {
     "increments": true,
-    "timestamps": true
+    "timestamps": false
   },
   "attributes": {
     "wallet": {
       "type": "string",
+      "private": false,
       "required": true,
       "unique": true,
       "maxLength": 42,
       "minLength": 42
     },
-    "url": {
+    "website": {
       "type": "string",
       "required": true,
       "unique": true,
@@ -25,7 +26,26 @@
     },
     "blocked": {
       "type": "boolean",
-      "default": true
+      "default": false,
+      "required": false,
+      "private": true
+    },
+    "partners": {
+      "collection": "webshop",
+      "via": "isPartner",
+      "dominant": true
+    },
+    "isPartner": {
+      "collection": "webshop",
+      "via": "partners"
+    },
+    "email": {
+      "type": "email",
+      "private": true,
+      "required": true,
+      "unique": true,
+      "maxLength": 63,
+      "minLength": 4
     }
   }
 }
