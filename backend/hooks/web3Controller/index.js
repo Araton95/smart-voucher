@@ -22,19 +22,31 @@ module.exports = strapi => {
     // SETTERS
     // --------
 
-    async getWeb3() {
-      return web3
+    async createVoucher(data) {
+      try {
+        const { webshopAddr, amount, nonce, signature } = data
+        const contractMethod = this.defaults.contract.methods.create(webshopAddr, amount, nonce, signature)
+        await this._signAndSend(contractMethod)
+      } catch (error) {
+        throw error
+      }
     },
 
-    // --------
-    // PRIVATE
-    // --------
+    async redeemVoucher(data) {
+      try {
+        const { webshopAddr, amount, voucherId, nonce, signature } = data
+        const contractMethod = this.defaults.contract.methods.redeem(webshopAddr, amount, voucherId, nonce, signature)
+        await this._signAndSend(contractMethod)
+      } catch (error) {
+        throw error
+      }
+    },
 
     async addPartner(data) {
       try {
         const { webshopAddr, partnerAddr, nonce, signature } = data
         const contractMethod = this.defaults.contract.methods.addPartner(webshopAddr, partnerAddr, nonce, signature)
-        await this.signMethod(contractMethod)
+        await this._signAndSend(contractMethod)
       } catch (error) {
         throw error
       }
@@ -44,11 +56,15 @@ module.exports = strapi => {
       try {
         const { webshopAddr, partnerAddr, nonce, signature } = data
         const contractMethod = this.defaults.contract.methods.removePartner(webshopAddr, partnerAddr, nonce, signature)
-        await this.signMethod(contractMethod)
+        await this._signAndSend(contractMethod)
       } catch (error) {
         throw error
       }
     },
+
+    // --------
+    // PRIVATE
+    // --------
 
     async signMethod(contractMethod) {
       try {
