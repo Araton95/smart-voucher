@@ -46,6 +46,10 @@
       "unique": true,
       "maxLength": 63,
       "minLength": 4
+    },
+    "voucher": {
+      "via": "webshop",
+      "model": "voucher"
     }
   }
 }

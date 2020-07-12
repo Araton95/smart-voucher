@@ -1,0 +1,17 @@
+{
+  "kind": "collectionType",
+  "collectionName": "vouchers",
+  "info": {
+    "name": "Voucher"
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true
+  },
+  "attributes": {
+    "webshop": {
+      "model": "webshop",
+      "via": "voucher"
+    }
+  }
+}
