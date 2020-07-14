@@ -41,7 +41,7 @@
       }
     },
     {
-      "method": "PUT",
+      "method": "POST",
       "path": "/vouchers/redeem",
       "handler": "voucher.redeem",
       "config": {
