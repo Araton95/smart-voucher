@@ -168,7 +168,7 @@ module.exports = strapi => {
         throw error
       }
     },
-  };
+  }
 
-  return hook;
-};
+  return hook
+}

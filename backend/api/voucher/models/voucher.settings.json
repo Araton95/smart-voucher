@@ -16,7 +16,8 @@
     "voucherId": {
       "type": "biginteger",
       "required": true,
-      "unique": true
+      "unique": true,
+      "private": true
     },
     "initialAmount": {
       "type": "biginteger",
