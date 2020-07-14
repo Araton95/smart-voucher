@@ -1,4 +1,5 @@
 const Web3 = require('web3')
+const EthereumTx = require('ethereumjs-tx').Transaction
 const abi = require('./abi.json')
 
 module.exports = strapi => {
@@ -26,7 +27,7 @@ module.exports = strapi => {
       try {
         const { webshopAddr, amount, nonce, signature } = data
         const contractMethod = this.defaults.contract.methods.create(webshopAddr, amount, nonce, signature)
-        await this._signAndSend(contractMethod)
+        return this._signAndSend(contractMethod)
       } catch (error) {
         throw error
       }
@@ -36,7 +37,7 @@ module.exports = strapi => {
       try {
         const { webshopAddr, amount, voucherId, nonce, signature } = data
         const contractMethod = this.defaults.contract.methods.redeem(webshopAddr, amount, voucherId, nonce, signature)
-        await this._signAndSend(contractMethod)
+        return this._signAndSend(contractMethod)
       } catch (error) {
         throw error
       }
@@ -46,7 +47,7 @@ module.exports = strapi => {
       try {
         const { webshopAddr, partnerAddr, nonce, signature } = data
         const contractMethod = this.defaults.contract.methods.addPartner(webshopAddr, partnerAddr, nonce, signature)
-        await this._signAndSend(contractMethod)
+        return this._signAndSend(contractMethod)
       } catch (error) {
         throw error
       }
@@ -56,7 +57,7 @@ module.exports = strapi => {
       try {
         const { webshopAddr, partnerAddr, nonce, signature } = data
         const contractMethod = this.defaults.contract.methods.removePartner(webshopAddr, partnerAddr, nonce, signature)
-        await this._signAndSend(contractMethod)
+        return this._signAndSend(contractMethod)
       } catch (error) {
         throw error
       }
@@ -89,14 +90,14 @@ module.exports = strapi => {
           'data':     encodedABI
         }
 
-        const privateKey = new Buffer(serverWalletPK.substr(2), 'hex')
+        const privateKey = Buffer.from(serverWalletPK.substr(2), 'hex')
         const tx = new EthereumTx(rawTransaction)
         tx.sign(privateKey)
         const serializedTx = tx.serialize()
 
         return new Promise((resolve, reject) => {
           web3.eth.sendSignedTransaction('0x' + serializedTx.toString('hex'))
-          .on('confirmation', () => resolve())
+          .on('confirmation', (confirmationNumber, receipt) => resolve(receipt))
           .on('error', error => reject(error))
         })
       } catch (error) {
