@@ -444,7 +444,7 @@ contract SmartVoucher is SignerRole {
     using ECDSA for bytes32;
     using SafeMath for uint256;
 
-    uint256 private _lastId;
+    uint256 private _lastId = 1;
 
     struct Voucher {
         uint256 id;
@@ -469,7 +469,7 @@ contract SmartVoucher is SignerRole {
     mapping(address => Webshop) private _webshops;
 
     event VoucherCreated(address indexed webshop, uint256 indexed amount, uint256 indexed id);
-    event VoucherRedeemed(address indexed webshop, uint256 indexed amount, uint256 indexed id);
+    event VoucherRedeemed(address indexed webshop, uint256 indexed amount, uint256 updatedAmount, uint256 indexed id);
     event PartnerAdded(address indexed webshop, address partner);
     event PartnerRemoved(address indexed webshop,address partner);
 
@@ -498,16 +498,19 @@ contract SmartVoucher is SignerRole {
         require(signer == webshop, "create: signed data is not correct");
         require(_webshops[webshop].nonce == nonce, "create: nonce is not correct");
 
-        _webshops[webshop].nonce++;
-        _vouchers[_lastId] = Voucher(_lastId, webshop, amount, amount, block.timestamp, address(0));
+        uint256 voucherId = _lastId;
 
-        _webshops[webshop].vouchersById[_webshops[webshop].vouchersCount] = _lastId;
+        _webshops[webshop].nonce++;
+        _vouchers[voucherId] = Voucher(voucherId, webshop, amount, amount, block.timestamp, address(0));
+
+        // Started from 1st element, not 0
+        _webshops[webshop].vouchersById[_webshops[webshop].vouchersCount + 1] = voucherId;
         _webshops[webshop].vouchersCount++;
         _webshops[webshop].lastActivity = block.timestamp;
 
         _lastId++;
 
-        emit VoucherCreated(webshop, amount, _vouchers[_lastId].id);
+        emit VoucherCreated(webshop, amount, voucherId);
     }
 
     function redeem(
@@ -532,7 +535,7 @@ contract SmartVoucher is SignerRole {
         _vouchers[voucherId].lastRedeemedWebshop = webshop;
         _webshops[webshop].lastActivity = block.timestamp;
 
-        emit VoucherRedeemed(webshop, amount, _vouchers[voucherId].id);
+        emit VoucherRedeemed(webshop, amount, _vouchers[voucherId].amount, _vouchers[voucherId].id);
     }
 
     function addPartner(
@@ -551,29 +554,13 @@ contract SmartVoucher is SignerRole {
         _webshops[webshop].nonce++;
         Webshop storage ws = _webshops[webshop];
 
-        bool isPartner = ws.isPartner[partner];
+
+        // Add partner to partners list
+        ws.isPartner[partner] = true;
+        ws.partners.push(partner);
         ws.lastActivity = block.timestamp;
 
-        if (isPartner) {
-            // Remove partner from partners list
-            ws.isPartner[partner] = false;
-            for (uint256 index = 0; index < ws.partners.length; index++) {
-                if (ws.partners[index] == partner) {
-                    ws.partners[index] = ws.partners[ws.partners.length - 1];
-                    delete ws.partners[ws.partners.length - 1];
-                    ws.partners.length--;
-                    break;
-                }
-            }
-
-            emit PartnerRemoved(webshop, partner);
-        } else {
-            // Add partner to partners list
-            ws.isPartner[partner] = true;
-            ws.partners.push(partner);
-
-            emit PartnerAdded(webshop, partner);
-        }
+        emit PartnerAdded(webshop, partner);
     }
 
     function removePartner(
@@ -592,29 +579,19 @@ contract SmartVoucher is SignerRole {
         _webshops[webshop].nonce++;
         Webshop storage ws = _webshops[webshop];
 
-        bool isPartner = ws.isPartner[partner];
+        // Remove partner from partners list
+        ws.isPartner[partner] = false;
+        for (uint256 index = 0; index < ws.partners.length; index++) {
+            if (ws.partners[index] == partner) {
+                ws.partners[index] = ws.partners[ws.partners.length - 1];
+                delete ws.partners[ws.partners.length - 1];
+                ws.partners.length--;
+                break;
+            }
+        }
         ws.lastActivity = block.timestamp;
 
-        if (isPartner) {
-            // Remove partner from partners list
-            ws.isPartner[partner] = false;
-            for (uint256 index = 0; index < ws.partners.length; index++) {
-                if (ws.partners[index] == partner) {
-                    ws.partners[index] = ws.partners[ws.partners.length - 1];
-                    delete ws.partners[ws.partners.length - 1];
-                    ws.partners.length--;
-                    break;
-                }
-            }
-
-            emit PartnerRemoved(webshop, partner);
-        } else {
-            // Add partner to partners list
-            ws.isPartner[partner] = true;
-            ws.partners.push(partner);
-
-            emit PartnerAdded(webshop, partner);
-        }
+        emit PartnerRemoved(webshop, partner);
     }
 
     // -----------------------------------------

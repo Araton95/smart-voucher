@@ -90,7 +90,7 @@ contract('Smart voucher contract tests', (accounts) => {
 
             assert.deepEqual(isOwner, true)
             assert.deepEqual(isSigner, true)
-            assert.deepEqual(lastId.toString(), '0')
+            assert.deepEqual(lastId.toString(), '1')
         })
     })
 
@@ -114,7 +114,9 @@ contract('Smart voucher contract tests', (accounts) => {
 
             assert.deepEqual(signerAddressByContract, webshop1)
 
-            await this.contractInstance.create(webshop1, testAmount, nonce, signature, { from: signer })
+            const data = await this.contractInstance.create(webshop1, testAmount, nonce, signature, { from: signer })
+            const eventId = data.logs[0].args['id'].toString()
+            assert.deepEqual(eventId, '1')
         })
 
         it('Check state after voucher creation', async () => {
@@ -125,8 +127,8 @@ contract('Smart voucher contract tests', (accounts) => {
             assert.deepEqual(webshop1Data['nonce'].toString(), '1')
             assert.notDeepEqual(webshop1Data['lastActivity'].toString(), '0')
 
-            const voucherData = await this.contractInstance.getVoucherByWebshop(webshop1, '0', ({ from: owner}))
-            assert.deepEqual(voucherData['id'].toString(), '0')
+            const voucherData = await this.contractInstance.getVoucherByWebshop(webshop1, '1', ({ from: owner}))
+            assert.deepEqual(voucherData['id'].toString(), '1')
             assert.deepEqual(voucherData['webshop'], webshop1)
             assert.deepEqual(voucherData['amount'].toString(), ether('10').toString())
             assert.deepEqual(voucherData['initialAmount'].toString(), ether('10').toString())
@@ -137,7 +139,7 @@ contract('Smart voucher contract tests', (accounts) => {
     describe('Redeem voucher validations', async () => {
         it('Check revert with other webshop signature', async () => {
             // Value from previous test
-            const voucherData = await this.contractInstance.getVoucherByWebshop(webshop1, '0', { from: owner })
+            const voucherData = await this.contractInstance.getVoucherByWebshop(webshop1, '1', { from: owner })
             const webshopData = await this.contractInstance.getWebshopData(webshop1, { from: webshop1 })
 
             const id = voucherData['id'].toString()
@@ -153,19 +155,19 @@ contract('Smart voucher contract tests', (accounts) => {
 
         it('Webshop redeem voucher', async () => {
             const redeemAmount = ether('3').toString()
-            await redeemVoucher(webshop1, redeemAmount, '0', webshop1PK)
+            await redeemVoucher(webshop1, redeemAmount, '1', webshop1PK)
         })
 
         it('Check state after redeem action', async () => {
-            const voucherData = await this.contractInstance.getVoucherByWebshop(webshop1, '0', { from: owner })
-            assert.deepEqual(voucherData['id'].toString(), '0')
+            const voucherData = await this.contractInstance.getVoucherByWebshop(webshop1, '1', { from: owner })
+            assert.deepEqual(voucherData['id'].toString(), '1')
             assert.deepEqual(voucherData['amount'].toString(), ether('7').toString()) // => 10 - 3
             assert.deepEqual(voucherData['initialAmount'].toString(), ether('10').toString())
         })
 
         it('Check revert with same signature', async () => {
             // Values from previous test
-            const id = '0'
+            const id = '1'
             const nonce = '0'
             const redeemAmount = ether('3').toString()
             const signature = await signRedeemData(redeemAmount, id, nonce, webshop1PK)
@@ -177,7 +179,7 @@ contract('Smart voucher contract tests', (accounts) => {
         })
 
         it('Check revert with bigger value', async () => {
-            const voucherData = await this.contractInstance.getVoucherByWebshop(webshop1, '0', { from: owner })
+            const voucherData = await this.contractInstance.getVoucherByWebshop(webshop1, '1', { from: owner })
             const webshopData = await this.contractInstance.getWebshopData(webshop1, { from: owner })
 
             const id = voucherData['id'].toString()
@@ -270,7 +272,9 @@ contract('Smart voucher contract tests', (accounts) => {
 
             assert.deepEqual(signerAddressByContract, webshop2)
 
-            await this.contractInstance.create(webshop2, testAmount, nonce, signature, { from: signer })
+            const data = await this.contractInstance.create(webshop2, testAmount, nonce, signature, { from: signer })
+            const eventId = data.logs[0].args['id'].toString()
+            assert.deepEqual(eventId, '2')
         })
 
         it('Check state after voucher creation', async () => {
@@ -281,8 +285,8 @@ contract('Smart voucher contract tests', (accounts) => {
             assert.deepEqual(webshop2Data['nonce'].toString(), '1')
             assert.notDeepEqual(webshop2Data['lastActivity'].toString(), '0')
 
-            const voucherData = await this.contractInstance.getVoucherByWebshop(webshop2, '0', ({ from: owner}))
-            assert.deepEqual(voucherData['id'].toString(), '1')
+            const voucherData = await this.contractInstance.getVoucherByWebshop(webshop2, '1', ({ from: owner}))
+            assert.deepEqual(voucherData['id'].toString(), '2')
             assert.deepEqual(voucherData['webshop'], webshop2)
             assert.deepEqual(voucherData['amount'].toString(), ether('20').toString())
             assert.deepEqual(voucherData['initialAmount'].toString(), ether('20').toString())
@@ -295,14 +299,14 @@ contract('Smart voucher contract tests', (accounts) => {
             const partner = webshop2
 
             const redeemAmount = ether('3').toString()
-            await redeemVoucher(partner, redeemAmount, '0', webshop2PK)
+            await redeemVoucher(partner, redeemAmount, '1', webshop2PK)
         })
 
         it('Remove partner and check his redeem action', async () => {
             const partner = webshop2
             await removePartner(webshop1, partner, webshop1PK)
 
-            const voucherData = await this.contractInstance.getVoucherByWebshop(webshop1, '0', { from: owner })
+            const voucherData = await this.contractInstance.getVoucherByWebshop(webshop1, '1', { from: owner })
             const webshopData = await this.contractInstance.getWebshopData(webshop2, { from: owner })
 
             const id = voucherData['id'].toString()
@@ -325,12 +329,12 @@ contract('Smart voucher contract tests', (accounts) => {
         it('Redeem amount 100 times', async () => {
             const redeemAmount = ether('0.01').toString()
             for (let i = 0; i < 20; i++) {
-                const voucherData = await this.contractInstance.getVoucherByWebshop(webshop1, '0', { from: owner })
+                const voucherData = await this.contractInstance.getVoucherByWebshop(webshop1, '1', { from: owner })
                 const currentAmount = voucherData['amount'].toString()
 
-                await redeemVoucher(webshop1, redeemAmount, '0', webshop1PK)
+                await redeemVoucher(webshop1, redeemAmount, '1', webshop1PK)
 
-                const updatedAmount = (await this.contractInstance.getVoucherByWebshop(webshop1, '0', { from: owner }))['amount'].toString()
+                const updatedAmount = (await this.contractInstance.getVoucherByWebshop(webshop1, '1', { from: owner }))['amount'].toString()
                 assert.equal(parseInt(updatedAmount) + parseInt(redeemAmount), parseInt(currentAmount))
             }
         })

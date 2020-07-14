@@ -8,7 +8,7 @@ contract SmartVoucher is SignerRole {
     using ECDSA for bytes32;
     using SafeMath for uint256;
 
-    uint256 private _lastId;
+    uint256 private _lastId = 1;
 
     struct Voucher {
         uint256 id;
@@ -33,7 +33,7 @@ contract SmartVoucher is SignerRole {
     mapping(address => Webshop) private _webshops;
 
     event VoucherCreated(address indexed webshop, uint256 indexed amount, uint256 indexed id);
-    event VoucherRedeemed(address indexed webshop, uint256 indexed amount, uint256 indexed id);
+    event VoucherRedeemed(address indexed webshop, uint256 indexed amount, uint256 updatedAmount, uint256 indexed id);
     event PartnerAdded(address indexed webshop, address partner);
     event PartnerRemoved(address indexed webshop,address partner);
 
@@ -62,16 +62,19 @@ contract SmartVoucher is SignerRole {
         require(signer == webshop, "create: signed data is not correct");
         require(_webshops[webshop].nonce == nonce, "create: nonce is not correct");
 
-        _webshops[webshop].nonce++;
-        _vouchers[_lastId] = Voucher(_lastId, webshop, amount, amount, block.timestamp, address(0));
+        uint256 voucherId = _lastId;
 
-        _webshops[webshop].vouchersById[_webshops[webshop].vouchersCount] = _lastId;
+        _webshops[webshop].nonce++;
+        _vouchers[voucherId] = Voucher(voucherId, webshop, amount, amount, block.timestamp, address(0));
+
+        // Started from 1st element, not 0
+        _webshops[webshop].vouchersById[_webshops[webshop].vouchersCount + 1] = voucherId;
         _webshops[webshop].vouchersCount++;
         _webshops[webshop].lastActivity = block.timestamp;
 
         _lastId++;
 
-        emit VoucherCreated(webshop, amount, _vouchers[_lastId].id);
+        emit VoucherCreated(webshop, amount, voucherId);
     }
 
     function redeem(
@@ -96,7 +99,7 @@ contract SmartVoucher is SignerRole {
         _vouchers[voucherId].lastRedeemedWebshop = webshop;
         _webshops[webshop].lastActivity = block.timestamp;
 
-        emit VoucherRedeemed(webshop, amount, _vouchers[voucherId].id);
+        emit VoucherRedeemed(webshop, amount, _vouchers[voucherId].amount, _vouchers[voucherId].id);
     }
 
     function addPartner(
