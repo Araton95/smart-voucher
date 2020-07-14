@@ -47,9 +47,9 @@
       "maxLength": 63,
       "minLength": 4
     },
-    "voucher": {
+    "vouchers": {
       "via": "webshop",
-      "model": "voucher"
+      "collection": "voucher"
     }
   }
 }

@@ -66,7 +66,7 @@ module.exports = strapi => {
     // PRIVATE
     // --------
 
-    async signMethod(contractMethod) {
+    async _signAndSend(contractMethod) {
       try {
         const serverWallet = strapi.config.get('hook.settings.web3Controller').wallet
         const serverWalletPK = strapi.config.get('hook.settings.web3Controller').walletPk

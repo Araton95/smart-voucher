@@ -5,13 +5,26 @@
     "name": "Voucher"
   },
   "options": {
-    "increments": true,
+    "increments": false,
     "timestamps": true
   },
   "attributes": {
     "webshop": {
       "model": "webshop",
-      "via": "voucher"
+      "via": "vouchers"
+    },
+    "voucherId": {
+      "type": "biginteger",
+      "required": true,
+      "unique": true
+    },
+    "initialAmount": {
+      "type": "biginteger",
+      "required": true
+    },
+    "currentAmount": {
+      "required": true,
+      "type": "biginteger"
     }
   }
 }

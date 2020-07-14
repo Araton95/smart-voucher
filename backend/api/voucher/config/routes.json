@@ -41,6 +41,14 @@
       }
     },
     {
+      "method": "PUT",
+      "path": "/vouchers/redeem",
+      "handler": "voucher.redeem",
+      "config": {
+        "policies": []
+      }
+    },
+    {
       "method": "DELETE",
       "path": "/vouchers/:id",
       "handler": "voucher.delete",

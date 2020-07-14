@@ -61,21 +61,10 @@ module.exports = {
         try {
             const { webshopAddr, partnerAddr, nonce, signature } = ctx.request.body
 
-            if (!webshopAddr) {
-                throw { message: 'Webshop address is not found' }
-            }
-
-            if (!partnerAddr) {
-                throw { message: 'Partner address is not found' }
-            }
-
-            if (!nonce) {
-                throw { message: 'Nonce is not found' }
-            }
-
-            if (!signature) {
-                throw { message: 'Signature is not found' }
-            }
+            if (!webshopAddr) throw { message: 'Webshop address is not found' }
+            if (!partnerAddr) throw { message: 'Partner address is not found' }
+            if (!nonce) throw { message: 'Nonce is not found' }
+            if (!signature) throw { message: 'Signature is not found' }
 
             // Find webshop
             const webshop = await strapi.services.webshop.findOne({ 'wallet': webshopAddr })
