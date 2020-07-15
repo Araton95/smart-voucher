@@ -3,8 +3,8 @@ const EthereumTx = require('ethereumjs-tx').Transaction
 const abi = require('./abi.json')
 
 module.exports = strapi => {
-  // const { provider } = strapi.config.get('hook.settings.web3Controller')
-  const web3 = new Web3('http://127.0.0.1:8545')
+  const { provider } = strapi.config.get('hook.settings.web3Controller')
+  const web3 = new Web3(provider)
 
   const hook = {
     // --------

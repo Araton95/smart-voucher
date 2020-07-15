@@ -12,7 +12,8 @@
     "ganache": "ganache-cli --gas-price 0 -a 30 --mnemonic genre dress knee lounge expose flash cute valid hard define box outdoor",
     "flat": "truffle-flattener ./contracts/SmartVoucher.sol > ./dist/SmartVoucher.sol",
     "build": "npm run compile && npm run flat",
-    "deploy:development": "truffle deploy --reset --network development"
+    "deploy:development": "truffle deploy --reset --network development",
+    "deploy:poa": "truffle deploy --reset --network poa"
   },
   "dependencies": {
     "chai": "^4.2.0",
