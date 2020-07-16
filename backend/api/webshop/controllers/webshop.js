@@ -92,9 +92,15 @@ module.exports = {
             const updatedPartners = JSON.stringify({ partners: [...webshop.partners, partner.id] })
             await strapi.services.webshop.update({ id: webshop.id }, updatedPartners)
 
-            ctx.send()
+            ctx.send({ ok: true })
         } catch (error) {
-            return ctx.badRequest(null, [{ message: error.message }])
+            let { message } = error
+
+            if (message && message.length && message.split(":").length > 1) {
+                message = message.split(":")[message.split(":").length - 1].trim()
+            }
+
+            return ctx.badRequest(null, [{ message }])
         }
     },
 
@@ -145,7 +151,13 @@ module.exports = {
 
             ctx.send({ ok: true })
         } catch (error) {
-            return ctx.badRequest(null, [{ message: error.message }])
+            let { message } = error
+
+            if (message && message.length && message.split(":").length > 1) {
+                message = message.split(":")[message.split(":").length - 1].trim()
+            }
+
+            return ctx.badRequest(null, [{ message }])
         }
     },
 }

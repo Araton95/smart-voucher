@@ -26,6 +26,11 @@
     "currentAmount": {
       "required": true,
       "type": "biginteger"
+    },
+    "blocked": {
+      "type": "boolean",
+      "default": false,
+      "private": true
     }
   }
 }

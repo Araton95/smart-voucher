@@ -111,3 +111,11 @@ coverage
 exports
 .cache
 build
+
+
+############################
+# Editor
+############################
+
+vscode
+.vscode

@@ -109,7 +109,7 @@ module.exports = strapi => {
     // GETTERS
     // --------
 
-    async getWeb3() {
+    getWeb3() {
       return web3
     },
 

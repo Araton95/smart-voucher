@@ -18,6 +18,14 @@
     },
     {
       "method": "GET",
+      "path": "/vouchers/validateCode",
+      "handler": "voucher.validateCode",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
       "path": "/vouchers/:id",
       "handler": "voucher.findOne",
       "config": {

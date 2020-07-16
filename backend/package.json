@@ -11,6 +11,7 @@
   },
   "devDependencies": {},
   "dependencies": {
+    "ethereumjs-abi": "^0.6.8",
     "ethereumjs-tx": "^2.1.2",
     "knex": "<0.20.0",
     "sqlite3": "latest",
