@@ -8,9 +8,5 @@
     "increments": true,
     "timestamps": true
   },
-  "attributes": {
-    "example": {
-      "type": "string"
-    }
-  }
+  "attributes": {}
 }
