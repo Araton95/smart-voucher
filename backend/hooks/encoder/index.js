@@ -10,10 +10,7 @@ module.exports = strapi => {
     // Defaults
     // --------
 
-    defaults: {
-      cipher: crypto.createCipher(algorithm, password),
-      decipher: crypto.createDecipher(algorithm, password)
-    },
+    defaults: {},
 
     async initialize() {},
 
@@ -22,14 +19,16 @@ module.exports = strapi => {
     // --------
 
     encode (data) {
-      let encrypted = this.defaults.cipher.update(data, 'utf8', 'hex')
-      encrypted += this.defaults.cipher.final('hex')
+      const cipher = crypto.createCipher(algorithm, password)
+      let encrypted = cipher.update(data, 'utf8', 'hex')
+      encrypted += cipher.final('hex')
       return encrypted
     },
 
     decode (data) {
-      let decrypted = this.defaults.decipher.update(data, 'hex', 'utf8')
-      decrypted += this.defaults.decipher.final('utf8')
+      const decipher = crypto.createDecipher(algorithm, password)
+      let decrypted = decipher.update(data, 'hex', 'utf8')
+      decrypted += decipher.final('utf8')
       return decrypted
     }
   }
