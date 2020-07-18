@@ -1,5 +1,5 @@
 const Web3 = require('web3')
-const EthereumTx = require('ethereumjs-tx').Transaction
+const EthereumTx = require('ethereumjs-tx')
 const abi = require('./abi.json')
 
 module.exports = strapi => {

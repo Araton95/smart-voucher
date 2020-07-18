@@ -34,10 +34,10 @@ module.exports = {
             })
 
             // Encode voucher id to encrypted data
-            const encode = strapi.hook.encoder.encode(voucherId)
+            const encodedCode = strapi.hook.encoder.encode(voucherId)
 
             // Send 200 `ok`
-            ctx.send({ voucherCode: encode })
+            ctx.send({  ok: true, voucherCode: encodedCode })
         } catch (error) {
             let { message } = error
 
