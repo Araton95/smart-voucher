@@ -28,33 +28,49 @@ module.exports = {
             // Send 200 `ok`
             return sanitizeEntity(entity, { model: strapi.models.webshop })
         } catch (error) {
-            return ctx.badRequest(null, [{ message: error.message }])
+            let { message } = error
+
+            if (message && message.length && message.split(":").length > 1) {
+                message = message.split(":")[message.split(":").length - 1].trim()
+            }
+
+            return ctx.badRequest(null, [{ message }])
         }
     },
 
     async findOne(ctx) {
-        // User id is wallet
-        const { id } = ctx.params
+        try {
+            // User id is wallet
+            const { id } = ctx.params
 
-        // Find webshop
-        const webshop = await strapi.services.webshop.findOne({ 'wallet': id })
+            // Find webshop
+            const webshop = await strapi.services.webshop.findOne({ 'wallet': id })
 
-        // Validate webshop exist
-        if (!webshop) {
-            return ctx.badRequest(null, [{ messages: [{ id: 'Any webshop with provided wallet not found' }] }])
+            // Validate webshop exist
+            if (!webshop) {
+                return ctx.badRequest(null, [{ messages: [{ id: 'Any webshop with provided wallet not found' }] }])
+            }
+
+            // Get webshop data from smart contract
+            const { nonce, vouchersCount} = await strapi.hook.web3Controller.getWebshopData(id)
+
+            const data = {
+                ...webshop,
+                nonce,
+                vouchersCount
+            }
+
+            // Send 200 `ok`
+            return sanitizeEntity(data, { model: strapi.models.webshop })
+        } catch (error) {
+            let { message } = error
+
+            if (message && message.length && message.split(":").length > 1) {
+                message = message.split(":")[message.split(":").length - 1].trim()
+            }
+
+            return ctx.badRequest(null, [{ message }])
         }
-
-        // Get webshop data from smart contract
-        const { nonce, vouchersCount} = await strapi.hook.web3Controller.getWebshopData(id)
-
-        const data = {
-            ...webshop,
-            nonce,
-            vouchersCount
-        }
-
-        // Send 200 `ok`
-        return sanitizeEntity(data, { model: strapi.models.webshop })
     },
 
     async addPartner(ctx) {
