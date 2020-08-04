@@ -10,8 +10,8 @@
   },
   "attributes": {
     "webshop": {
-      "model": "webshop",
-      "via": "vouchers"
+      "via": "vouchers",
+      "model": "webshop"
     },
     "voucherId": {
       "type": "biginteger",

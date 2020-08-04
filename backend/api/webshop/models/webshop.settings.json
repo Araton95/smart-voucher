@@ -30,14 +30,14 @@
       "required": false,
       "private": true
     },
-    "partners": {
+    "publishers": {
       "collection": "webshop",
-      "via": "isPartner",
+      "via": "subscribers",
       "dominant": true
     },
-    "isPartner": {
+    "subscribers": {
       "collection": "webshop",
-      "via": "partners"
+      "via": "publishers"
     },
     "email": {
       "type": "email",
@@ -48,8 +48,8 @@
       "minLength": 4
     },
     "vouchers": {
-      "via": "webshop",
-      "collection": "voucher"
+      "collection": "voucher",
+      "via": "webshop"
     }
   }
 }
