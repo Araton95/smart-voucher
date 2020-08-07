@@ -105,7 +105,7 @@ module.exports = {
 
             await strapi.hook.web3Controller.addPartner({webshopAddr, partnerAddr, nonce, signature})
 
-            const updatedPartners = JSON.stringify({ partners: [...webshop.partners, partner.id] })
+            const updatedPartners = JSON.stringify({ publishers: [...webshop.publishers, partner.id] })
             await strapi.services.webshop.update({ id: webshop.id }, updatedPartners)
 
             ctx.send({ ok: true })
@@ -161,9 +161,9 @@ module.exports = {
 
             await strapi.hook.web3Controller.removePartner({webshopAddr, partnerAddr, nonce, signature})
 
-            let updatedPartners = webshop.partners.filter(el => el.id !== partner.id)
-            updatedPartners = JSON.stringify({ partners: updatedPartners })
-            await strapi.services.webshop.update({ id: webshop.id }, updatedPartners)
+            let updatedPartners = webshop.publishers.filter(el => el.id !== partner.id)
+            updatedPartners = JSON.stringify({ publishers: updatedPartners })
+            await strapi.services.webshop.update({ id: webshop.id }, publishers)
 
             ctx.send({ ok: true })
         } catch (error) {
