@@ -1,0 +1,32 @@
+{
+  "name": "wsys/smart-voucher",
+  "type": "library",
+  "description": "Smart Voucher API Client",
+  "homepage": "https://documenter.getpostman.com/view/6846240/T1DjjK9k?version=latest",
+  "license": "GPL",
+  "authors": [
+    {
+      "name": "Grigor Farishyan",
+      "email": "web@websystems.am",
+      "homepage": "https://websystems.am",
+      "role": "Developer"
+    }
+  ],
+  "require": {
+    "guzzlehttp/guzzle": "^6.5"
+  },
+  "require-dev": {
+    "php-http/client-integration-tests": "dev-phpunit8",
+    "phpunit/phpunit": "^8.5.5"
+  },
+  "autoload": {
+    "psr-4": {
+      "SmartVoucher\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "SmartVoucher\\Tests\\": "tests/"
+    }
+  }
+}
