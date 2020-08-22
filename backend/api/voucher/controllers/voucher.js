@@ -2,6 +2,14 @@
 
 const { sanitizeEntity } = require('strapi-utils')
 
+const centsToUsd = (amount) => {
+  amount = Number(amount) // Convert argument to number
+  amount /= 100 // Divide cents to USD
+  amount = parseFloat(amount).toLocaleString('en-US', { style: 'currency', currency: 'USD' })
+  amount = amount.substring(1) // remove $ symbol at the start
+  return amount
+}
+
 /**
  * Read the documentation (https://strapi.io/documentation/v3.x/concepts/controllers.html#core-controllers)
  * to customize this controller
@@ -28,8 +36,8 @@ module.exports = {
             // Save voucher to DB
             await strapi.services.voucher.create({
                 'voucherId': voucherId,
-                'initialAmount': amount,
-                'currentAmount': amount,
+                'initialAmount': centsToUsd(amount),
+                'currentAmount': centsToUsd(amount),
                 'webshop': webshop['id']
             })
 
@@ -69,7 +77,7 @@ module.exports = {
             // Send transaction to smart contract
             await strapi.hook.web3Controller.redeemVoucher({ webshopAddr, amount, voucherId, nonce, signature })
             const voucherDataContract = await strapi.hook.web3Controller.getVoucherData(voucherId)
-            const voucherBalance = voucherDataContract['amount'].toString()
+            const voucherBalance = centsToUsd(voucherDataContract['amount'].toString())
             const updatedVoucher = JSON.stringify({ currentAmount: voucherBalance })
 
             // Update voucher data on DB

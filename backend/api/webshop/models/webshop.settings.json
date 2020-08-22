@@ -48,8 +48,8 @@
       "minLength": 4
     },
     "vouchers": {
-      "collection": "voucher",
-      "via": "webshop"
+      "via": "webshop",
+      "collection": "voucher"
     }
   }
 }

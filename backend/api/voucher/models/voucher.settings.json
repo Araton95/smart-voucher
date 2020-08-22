@@ -10,8 +10,8 @@
   },
   "attributes": {
     "webshop": {
-      "via": "vouchers",
-      "model": "webshop"
+      "model": "webshop",
+      "via": "vouchers"
     },
     "voucherId": {
       "type": "biginteger",
@@ -20,12 +20,12 @@
       "private": true
     },
     "initialAmount": {
-      "type": "biginteger",
+      "type": "decimal",
       "required": true
     },
     "currentAmount": {
       "required": true,
-      "type": "biginteger"
+      "type": "decimal"
     },
     "blocked": {
       "type": "boolean",
