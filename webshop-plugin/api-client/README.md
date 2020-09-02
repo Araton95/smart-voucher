@@ -5,7 +5,7 @@ Smart Voucher API PHP Client Implementation
 
 To install library use
 ```bash
-composer require "wsys/smart-voucher"
+composer require "w-sys/smart-voucher"
 ```
 
 ```php

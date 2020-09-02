@@ -1,9 +1,9 @@
 {
-  "name": "wsys/smart-voucher",
+  "name": "w-sys/smart-voucher",
   "type": "library",
   "description": "Smart Voucher API Client",
   "homepage": "https://documenter.getpostman.com/view/6846240/T1DjjK9k?version=latest",
-  "license": "GPL",
+  "license": "MIT",
   "authors": [
     {
       "name": "Grigor Farishyan",
@@ -13,7 +13,9 @@
     }
   ],
   "require": {
-    "guzzlehttp/guzzle": "^6.5"
+    "guzzlehttp/guzzle": "^6.5",
+    "kornrunner/keccak": "^1.0",
+    "simplito/elliptic-php": "^1.0"
   },
   "require-dev": {
     "php-http/client-integration-tests": "dev-phpunit8",
