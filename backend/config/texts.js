@@ -4,13 +4,13 @@ module.exports = {
     missing_webshop: 'Webshop address is missing',
     invalid_webshop: 'Invalid webshop address',
     webshop_exists: 'Webshop address already exists',
-    webshop_not_exists: 'Any webshop with provided wallet not found',
+    webshop_not_exists: 'Webshop with provided wallet not found',
     blocked_webshop: 'Webshop is blocked',
 
     // Partner
     missing_partner: 'Partner address is missing',
     invalid_partner: 'Invalid partner address',
-    partner_not_exists: 'Any webshop with provided partner wallet not found',
+    partner_not_exists: 'Webshop with provided partner wallet not found',
     blocked_partner: 'Partner is blocked',
 
     // Website URL
@@ -28,7 +28,7 @@ module.exports = {
 
     // Voucher id
     missing_voucher_id: 'Voucher id is missing',
-    voucher_not_exists: 'Any voucher with provided id not found',
+    voucher_not_exists: 'Voucher with provided id not found',
     blocked_voucher: 'Voucher is blocked',
 
     // Voucher code

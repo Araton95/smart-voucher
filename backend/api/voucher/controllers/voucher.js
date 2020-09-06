@@ -1,7 +1,7 @@
 'use strict'
 
 const { sanitizeEntity } = require('strapi-utils')
-const texts = require('../../../config/texts')
+const { texts } = require('../../../config/texts')
 
 /**
  * Read the documentation (https://strapi.io/documentation/v3.x/concepts/controllers.html#core-controllers)
@@ -55,7 +55,7 @@ module.exports = {
                 message = strapi.hook.helpers.trimContractError(message)
             }
 
-            return ctx.badRequest(null, [{ message }])
+            return  ctx.badRequest(null, message)
         }
     },
 
@@ -110,7 +110,7 @@ module.exports = {
                 message = strapi.hook.helpers.trimContractError(message)
             }
 
-            return ctx.badRequest(null, [{ message }])
+            return  ctx.badRequest(null, message)
         }
     },
 
@@ -139,7 +139,8 @@ module.exports = {
                 message = strapi.hook.helpers.trimContractError(message)
             }
 
-            return ctx.badRequest(null, [{ message }])
+            console.log(message)
+            return ctx.badRequest(null, message)
         }
     }
 }

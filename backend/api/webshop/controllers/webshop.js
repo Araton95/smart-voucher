@@ -40,7 +40,7 @@ module.exports = {
                 message = strapi.hook.helpers.trimContractError(message)
             }
 
-            return ctx.badRequest(null, [{ message }])
+            return  ctx.badRequest(null, message)
         }
     },
 
@@ -78,7 +78,7 @@ module.exports = {
                 message = strapi.hook.helpers.trimContractError(message)
             }
 
-            return ctx.badRequest(null, [{ message }])
+            return  ctx.badRequest(null, message)
         }
     },
 
@@ -128,7 +128,7 @@ module.exports = {
                 message = strapi.hook.helpers.trimContractError(message)
             }
 
-            return ctx.badRequest(null, [{ message }])
+            return  ctx.badRequest(null, message)
         }
     },
 
@@ -177,7 +177,7 @@ module.exports = {
                 message = strapi.hook.helpers.trimContractError(message)
             }
 
-            return ctx.badRequest(null, [{ message }])
+            return  ctx.badRequest(null, message)
         }
     },
 }
