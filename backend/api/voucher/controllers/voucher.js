@@ -1,6 +1,7 @@
 'use strict'
 
 const { sanitizeEntity } = require('strapi-utils')
+const texts = require('../../../config/texts')
 
 /**
  * Read the documentation (https://strapi.io/documentation/v3.x/concepts/controllers.html#core-controllers)
@@ -12,17 +13,23 @@ module.exports = {
         try {
             const { webshopAddr, amount, nonce, signature } = ctx.request.body
 
-            if (!webshopAddr) throw { message: 'Webshop address is missing'}
-            if (!amount) throw { message: 'Amount is missing'}
-            if (!nonce) throw { message: 'Nonce is missing'}
-            if (!signature) throw { message: 'Signature is missing'}
+            if (!webshopAddr) throw { message: texts.missing_webshop }
+            if (!amount) throw { message: texts.missing_amount }
+            if (!nonce) throw { message: texts.missing_nonce }
+            if (!signature) throw { message: texts.missing_signature }
 
-            if (!strapi.hook.web3Controller.isAddress(webshopAddr)) throw { message: 'Invalid webshop address'}
-            if (!strapi.hook.web3Controller.isSignedData(signature)) throw { message: 'Invalid signed data'}
+            if (!strapi.hook.web3Controller.isAddress(webshopAddr)) throw { message: texts.invalid_webshop }
+            if (!strapi.hook.web3Controller.isSignedData(signature)) throw { message: texts.invalid_signature }
 
             // Validate webshop address
             const webshop = await strapi.services.webshop.findOne({ 'wallet': webshopAddr })
-            if (!webshop) throw { message: 'Webshop not found'}
+
+            // Validate webshop exist
+            if (!webshop) {
+                throw { message: texts.webshop_not_exists }
+            } else if (webshop.blocked) {
+                throw { message: texts.blocked_webshop }
+            }
 
             // Send transaction to smart contract
             const voucherId = await strapi.hook.web3Controller.getVouchersCount()
@@ -56,21 +63,26 @@ module.exports = {
         try {
             const { webshopAddr, amount, voucherId, nonce, signature } = ctx.request.body
 
-            if (!webshopAddr) throw { message: 'Webshop address is missing'}
-            if (!amount) throw { message: 'Amount is missing'}
-            if (!voucherId) throw { message: 'Voucher code is missing'}
-            if (!nonce) throw { message: 'Nonce is missing'}
-            if (!signature) throw { message: 'Signature is missing'}
+            if (!webshopAddr) throw { message: texts.missing_webshop }
+            if (!amount) throw { message: texts.missing_amount }
+            if (!voucherId) throw { message: texts.missing_voucher_id }
+            if (!nonce) throw { message: texts.missing_nonce }
+            if (!signature) throw { message: texts.missing_signature }
 
-            if (!strapi.hook.web3Controller.isAddress(webshopAddr)) throw { message: 'Invalid webshop address'}
-            if (!strapi.hook.web3Controller.isSignedData(signature)) throw { message: 'Invalid signed data'}
+            if (!strapi.hook.web3Controller.isAddress(webshopAddr)) throw { message: texts.invalid_webshop }
+            if (!strapi.hook.web3Controller.isSignedData(signature)) throw { message: texts.invalid_signature }
 
             const webshop = await strapi.services.webshop.findOne({ 'wallet': webshopAddr })
-            if (!webshop) throw { message: 'Webshop not found'}
+            // Validate webshop exist
+            if (!webshop) throw { message: texts.webshop_not_exists }
 
             // Validate voucher id
             const voucher = await strapi.services.voucher.findOne({ voucherId })
-            if (!voucher) throw { message: 'Voucher not found'}
+            if (!voucher) {
+                throw { message: texts.voucher_not_exists }
+            } else if (voucher.blocked) {
+                throw { message: texts.blocked_voucher }
+            }
 
             // Send transaction to smart contract
             await strapi.hook.web3Controller.redeemVoucher({ webshopAddr, amount, voucherId, nonce, signature })
@@ -97,16 +109,17 @@ module.exports = {
     async validateCode(ctx) {
         try {
             const { voucherCode } = ctx.query
-            if (!voucherCode) throw { message: 'Voucher code is missing'}
+            if (!voucherCode) throw { message: texts.missing_voucher_code }
 
             // Decode encrypted voucher code to voucher Id
             const voucherId = strapi.hook.encoder.decode(voucherCode)
 
+            // Validate voucher id
             const voucher = await strapi.services.voucher.findOne({ voucherId })
             if (!voucher) {
-                throw { message: 'Voucher not found' }
+                throw { message: texts.voucher_not_exists }
             } else if (voucher.blocked) {
-                throw { message: 'Voucher is blocked' }
+                throw { message: texts.blocked_voucher }
             }
 
             // Send 200 `ok`
