@@ -2,14 +2,6 @@
 
 const { sanitizeEntity } = require('strapi-utils')
 
-const centsToUsd = (amount) => {
-  amount = Number(amount) // Convert argument to number
-  amount /= 100 // Divide cents to USD
-  amount = parseFloat(amount).toLocaleString('en-US', { style: 'currency', currency: 'USD' })
-  amount = amount.substring(1) // remove $ symbol at the start
-  return amount
-}
-
 /**
  * Read the documentation (https://strapi.io/documentation/v3.x/concepts/controllers.html#core-controllers)
  * to customize this controller
@@ -25,6 +17,9 @@ module.exports = {
             if (!nonce) throw { message: 'Nonce is missing'}
             if (!signature) throw { message: 'Signature is missing'}
 
+            if (!strapi.hook.web3Controller.isAddress(webshopAddr)) throw { message: 'Invalid webshop address'}
+            if (!strapi.hook.web3Controller.isSignedData(signature)) throw { message: 'Invalid signed data'}
+
             // Validate webshop address
             const webshop = await strapi.services.webshop.findOne({ 'wallet': webshopAddr })
             if (!webshop) throw { message: 'Webshop not found'}
@@ -36,8 +31,8 @@ module.exports = {
             // Save voucher to DB
             await strapi.services.voucher.create({
                 'voucherId': voucherId,
-                'initialAmount': centsToUsd(amount),
-                'currentAmount': centsToUsd(amount),
+                'initialAmount': strapi.hook.helpers.centsToUsd(amount),
+                'currentAmount': strapi.hook.helpers.centsToUsd(amount),
                 'webshop': webshop['id']
             })
 
@@ -50,7 +45,7 @@ module.exports = {
             let { message } = error
 
             if (message && message.length && message.split(":").length > 1) {
-                message = message.split(":")[message.split(":").length - 1].trim()
+                message = strapi.hook.helpers.trimContractError(message)
             }
 
             return ctx.badRequest(null, [{ message }])
@@ -66,6 +61,9 @@ module.exports = {
             if (!voucherId) throw { message: 'Voucher code is missing'}
             if (!nonce) throw { message: 'Nonce is missing'}
             if (!signature) throw { message: 'Signature is missing'}
+
+            if (!strapi.hook.web3Controller.isAddress(webshopAddr)) throw { message: 'Invalid webshop address'}
+            if (!strapi.hook.web3Controller.isSignedData(signature)) throw { message: 'Invalid signed data'}
 
             const webshop = await strapi.services.webshop.findOne({ 'wallet': webshopAddr })
             if (!webshop) throw { message: 'Webshop not found'}
@@ -89,7 +87,7 @@ module.exports = {
             let { message } = error
 
             if (message && message.length && message.split(":").length > 1) {
-                message = message.split(":")[message.split(":").length - 1].trim()
+                message = strapi.hook.helpers.trimContractError(message)
             }
 
             return ctx.badRequest(null, [{ message }])
@@ -117,7 +115,7 @@ module.exports = {
             let { message } = error
 
             if (message && message.length && message.split(":").length > 1) {
-                message = message.split(":")[message.split(":").length - 1].trim()
+                message = strapi.hook.helpers.trimContractError(message)
             }
 
             return ctx.badRequest(null, [{ message }])

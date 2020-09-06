@@ -11,5 +11,8 @@ module.exports = {
         enabled: true,
         password: process.env.ENCODE_PASSWORD,
       },
+      'helpers': {
+        enabled: true,
+      },
     },
   };

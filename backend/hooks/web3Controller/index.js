@@ -15,9 +15,7 @@ module.exports = strapi => {
       contract: new web3.eth.Contract(abi, strapi.config.get('hook.settings.web3Controller').contractAddress),
     },
 
-    async initialize() {
-
-    },
+    async initialize() {},
 
     // --------
     // SETTERS
@@ -97,7 +95,7 @@ module.exports = strapi => {
 
         return new Promise((resolve, reject) => {
           web3.eth.sendSignedTransaction('0x' + serializedTx.toString('hex'))
-          .on('confirmation', (confirmationNumber, receipt) => resolve(receipt))
+          .once('confirmation', (confirmationNumber, receipt) => resolve(receipt))
           .on('error', error => reject(error))
         })
       } catch (error) {
@@ -168,6 +166,15 @@ module.exports = strapi => {
         throw error
       }
     },
+
+    isAddress(address) {
+      return web3.utils.isAddress(address)
+    },
+
+    isSignedData(signature) {
+      const regex = /^0x[a-fA-F0-9]{130}$/
+      return regex.test(String(signature))
+    }
   }
 
   return hook
