@@ -55,12 +55,12 @@ contract SmartVoucher is SignerRole {
         uint256 nonce,
         bytes calldata signature
     ) external onlySigner {
-        require(webshop != address(0), "create: invalid webshop address");
-        require(amount > 0, "create: amount should be bigger then 0");
+        require(webshop != address(0), "create: Invalid webshop address.");
+        require(amount > 0, "create: Amount should be bigger then 0.");
 
         address signer = getSignerAddress(amount, nonce, signature);
-        require(signer == webshop, "create: signed data is not correct");
-        require(_webshops[webshop].nonce == nonce, "create: nonce is not correct");
+        require(signer == webshop, "create: Signed data is not correct.");
+        require(_webshops[webshop].nonce == nonce, "create: Nonce is not correct.");
 
         uint256 voucherId = _lastId;
 
@@ -84,15 +84,15 @@ contract SmartVoucher is SignerRole {
         uint256 nonce,
         bytes calldata signature
     ) external onlySigner {
-        require(webshop != address(0), "redeem: invalid webshop address");
-        require(amount > 0, "redeem: amount should be bigger then 0");
-        require(voucherId >= 0 && voucherId < _lastId, "redeem: invalid voucherId address");
-        require(_vouchers[voucherId].webshop == webshop || _webshops[_vouchers[voucherId].webshop].isPartner[webshop], "redeem: not allowed webshop");
-        require(_vouchers[voucherId].amount >= amount, "redeem: voucher amount is not enough");
-        require(_webshops[webshop].nonce == nonce, "redeem: nonce is not correct");
+        require(webshop != address(0), "redeem: Invalid webshop address.");
+        require(amount > 0, "redeem: Amount should be bigger then 0.");
+        require(voucherId >= 0 && voucherId < _lastId, "redeem: Invalid voucherId address.");
+        require(_vouchers[voucherId].webshop == webshop || _webshops[_vouchers[voucherId].webshop].isPartner[webshop], "redeem: Not allowed webshop.");
+        require(_vouchers[voucherId].amount >= amount, "redeem: Voucher amount is not enough.");
+        require(_webshops[webshop].nonce == nonce, "redeem: Nonce is not correct.");
 
         address signer = getSignerAddress(amount, voucherId, nonce, signature);
-        require(signer == webshop, "redeem: signed data is not correct");
+        require(signer == webshop, "redeem: Signed data is not correct.");
 
         _webshops[webshop].nonce++;
         _vouchers[voucherId].amount = _vouchers[voucherId].amount.sub(amount);
@@ -108,12 +108,12 @@ contract SmartVoucher is SignerRole {
         uint256 nonce,
         bytes calldata signature
     ) external onlySigner {
-        require(webshop != address(0), "togglePartner: invalid webshop address");
-        require(partner != address(0), "togglePartner: invalid partner address");
-        require(_webshops[webshop].nonce == nonce, "redeem: nonce is not correct");
+        require(webshop != address(0), "togglePartner: Invalid webshop address.");
+        require(partner != address(0), "togglePartner: Invalid partner address.");
+        require(_webshops[webshop].nonce == nonce, "redeem: Nonce is not correct.");
 
         address signer = getSignerAddress(partner, nonce, signature);
-        require(signer == webshop, "redeem: signed data is not correct");
+        require(signer == webshop, "redeem: Signed data is not correct.");
 
         _webshops[webshop].nonce++;
         Webshop storage ws = _webshops[webshop];
@@ -133,12 +133,12 @@ contract SmartVoucher is SignerRole {
         uint256 nonce,
         bytes calldata signature
     ) external onlySigner {
-        require(webshop != address(0), "togglePartner: invalid webshop address");
-        require(partner != address(0), "togglePartner: invalid partner address");
-        require(_webshops[webshop].nonce == nonce, "redeem: nonce is not correct");
+        require(webshop != address(0), "togglePartner: Invalid webshop address.");
+        require(partner != address(0), "togglePartner: Invalid partner address.");
+        require(_webshops[webshop].nonce == nonce, "redeem: nonce is not correct.");
 
         address signer = getSignerAddress(partner, nonce, signature);
-        require(signer == webshop, "redeem: signed data is not correct");
+        require(signer == webshop, "redeem: Signed data is not correct.");
 
         _webshops[webshop].nonce++;
         Webshop storage ws = _webshops[webshop];
