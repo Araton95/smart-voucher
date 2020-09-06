@@ -70,7 +70,6 @@ module.exports = {
             return sanitizeEntity(data, { model: strapi.models.webshop })
         } catch (error) {
             let { message } = error
-            console.log(error)
 
             if (message && message.length && message.split(':').length > 1) {
                 message = strapi.hook.helpers.trimContractError(message)
