@@ -74,7 +74,11 @@ module.exports = {
 
             const webshop = await strapi.services.webshop.findOne({ 'wallet': webshopAddr })
             // Validate webshop exist
-            if (!webshop) throw { message: texts.webshop_not_exists }
+            if (!webshop) {
+              throw { message: texts.webshop_not_exists }
+            } else if (webshop.blocked) {
+              throw { message: texts.blocked_webshop }
+            }
 
             // Validate voucher id
             const voucher = await strapi.services.voucher.findOne({ voucherId })
@@ -86,8 +90,12 @@ module.exports = {
 
             // Send transaction to smart contract
             await strapi.hook.web3Controller.redeemVoucher({ webshopAddr, amount, voucherId, nonce, signature })
+
+            // Fetch updated data from contract
             const voucherDataContract = await strapi.hook.web3Controller.getVoucherData(voucherId)
-            const voucherBalance = centsToUsd(voucherDataContract['amount'].toString())
+
+            // Update the Strapi DB balance
+            const voucherBalance = strapi.hook.helpers.centsToUsd(voucherDataContract['amount'].toString())
             const updatedVoucher = JSON.stringify({ currentAmount: voucherBalance })
 
             // Update voucher data on DB
