@@ -167,7 +167,7 @@ module.exports = {
 
             let updatedPartners = webshop.publishers.filter(el => el.id !== partner.id)
             updatedPartners = JSON.stringify({ publishers: updatedPartners })
-            await strapi.services.webshop.update({ id: webshop.id }, publishers)
+            await strapi.services.webshop.update({ id: webshop.id }, updatedPartners)
 
             ctx.send({ ok: true })
         } catch (error) {
