@@ -116,11 +116,20 @@ module.exports = {
 
     async validateCode(ctx) {
         try {
-            const { voucherCode } = ctx.query
+            const { voucherCode, webshopAddr } = ctx.query
             if (!voucherCode) throw { message: texts.missing_voucher_code }
+            if (!webshopAddr) throw { message: texts.missing_webshop }
 
             // Decode encrypted voucher code to voucher Id
             const voucherId = strapi.hook.encoder.decode(voucherCode)
+
+            const webshop = await strapi.services.webshop.findOne({ 'wallet': webshopAddr })
+            // Validate webshop exist
+            if (!webshop) {
+              throw { message: texts.webshop_not_exists }
+            } else if (webshop.blocked) {
+              throw { message: texts.blocked_webshop }
+            }
 
             // Validate voucher id
             const voucher = await strapi.services.voucher.findOne({ voucherId })
@@ -130,6 +139,7 @@ module.exports = {
                 throw { message: texts.blocked_voucher }
             }
 
+            console.log('WEBSHOP =>', webshop)
             // Send 200 `ok`
             ctx.send({ voucherId })
         } catch (error) {

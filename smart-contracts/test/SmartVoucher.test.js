@@ -26,10 +26,10 @@ contract('Smart voucher contract tests', (accounts) => {
         return sig.signature
     }
 
-    const signPartnerData = async (partner, nonce, signerPk) => {
+    const signPartnerData = async (partners, nonce, signerPk) => {
         const hash = '0x' + ethereumjs.soliditySHA3(
-            ['address', 'uint256'],
-            [partner, nonce]
+            ['address[]', 'uint256'],
+            [partners, nonce]
         ).toString('hex')
 
         const sig = await web3.eth.accounts.sign(hash, signerPk)
@@ -46,20 +46,20 @@ contract('Smart voucher contract tests', (accounts) => {
         return sig.signature
     }
 
-    const addPartner = async (webshop, partner, signerPk) => {
+    const addPartners = async (webshop, partners, signerPk) => {
         const webshopData = await this.contractInstance.getWebshopData(webshop, { from: webshop })
         const nonce = webshopData['nonce'].toString()
 
-        const signature = await signPartnerData(partner, nonce, signerPk)
-        await this.contractInstance.addPartner(webshop, partner, nonce, signature, { from: signer })
+        const signature = await signPartnerData(partners, nonce, signerPk)
+        await this.contractInstance.addPartners(webshop, partners, nonce, signature, { from: signer })
     }
 
-    const removePartner = async (webshop, partner, signerPk) => {
+    const removePartners = async (webshop, partners, signerPk) => {
         const webshopData = await this.contractInstance.getWebshopData(webshop, { from: webshop })
         const nonce = webshopData['nonce'].toString()
 
-        const signature = await signPartnerData(partner, nonce, signerPk)
-        await this.contractInstance.removePartner(webshop, partner, nonce, signature, { from: signer })
+        const signature = await signPartnerData(partners, nonce, signerPk)
+        await this.contractInstance.removePartners(webshop, partners, nonce, signature, { from: signer })
     }
 
     const redeemVoucher = async (webshop, amount, voucherId, signerPk) => {
@@ -149,7 +149,7 @@ contract('Smart voucher contract tests', (accounts) => {
 
             await expectRevert(
                 this.contractInstance.redeem(webshop1, redeemAmount, id, nonce, signature, { from: signer }),
-                'redeem: signed data is not correct'
+                'redeem: Signed data is not correct.'
             )
         })
 
@@ -174,7 +174,7 @@ contract('Smart voucher contract tests', (accounts) => {
 
             await expectRevert(
                 this.contractInstance.redeem(webshop1, redeemAmount, id, nonce, signature, { from: signer }),
-                'redeem: nonce is not correct'
+                'redeem: Nonce is not correct.'
             )
         })
 
@@ -190,7 +190,7 @@ contract('Smart voucher contract tests', (accounts) => {
 
             await expectRevert(
                 this.contractInstance.redeem(webshop1, wrongRedeemAmount, id, nonce, signature, { from: signer }),
-                'redeem: voucher amount is not enough'
+                'redeem: Voucher amount is not enough.'
             )
         })
     })
@@ -204,8 +204,8 @@ contract('Smart voucher contract tests', (accounts) => {
         })
 
         it('Add a new partner', async () => {
-            const partner = webshop2
-            await addPartner(webshop1, partner, webshop1PK)
+            const partners = [webshop2]
+            await addPartners(webshop1, partners, webshop1PK)
         })
 
         it('Check state after adding partner', async () => {
@@ -216,10 +216,12 @@ contract('Smart voucher contract tests', (accounts) => {
         })
 
         it('Add multiply partners', async () => {
+            const partners = []
             for (let i = 4; i < 10; i++) {
-                const partner = accounts[i]
-                await addPartner(webshop1, partner, webshop1PK)
+                partners.push(accounts[i])
             }
+
+            await addPartners(webshop1, partners, webshop1PK)
         })
 
         it('Check state after adding multiple partners', async () => {
@@ -228,27 +230,34 @@ contract('Smart voucher contract tests', (accounts) => {
         })
 
         it('Remove middle partner', async () => {
-            const partner = accounts[6]
-            await removePartner(webshop1, partner, webshop1PK)
+            const partners = [accounts[6], accounts[7]]
+            await removePartners(webshop1, partners, webshop1PK)
         })
 
         it('Check state after removing certain partner', async () => {
-            const partner = accounts[6]
-            const isPartner = await this.contractInstance.isWebshopPartner(webshop1, partner, { from: owner })
-            const { partners } = await this.contractInstance.getWebshopData(webshop1, { from: owner })
+            const targetPartners = [accounts[7], accounts[6]]
+            let isPartner = await this.contractInstance.isWebshopPartner(webshop1, targetPartners[0], { from: owner })
             assert.deepEqual(isPartner, false)
-            assert.deepEqual(partners, [webshop2, accounts[4], accounts[5], accounts[9], accounts[7], accounts[8]])
+
+            isPartner = await this.contractInstance.isWebshopPartner(webshop1, targetPartners[1], { from: owner })
+            assert.deepEqual(isPartner, false)
+
+            let { partners } = await this.contractInstance.getWebshopData(webshop1, { from: owner })
+            assert.deepEqual(partners, [webshop2, accounts[4], accounts[5], accounts[9], accounts[8]])
         })
 
-        it('Add removed partner and check the state', async () => {
-            const partner = accounts[6]
-            await addPartner(webshop1, partner, webshop1PK)
+        it('Add removed partners and check the state', async () => {
+            const targetPartners = [accounts[7], accounts[6]]
+            await addPartners(webshop1, targetPartners, webshop1PK)
 
-            const isPartner = await this.contractInstance.isWebshopPartner(webshop1, partner, { from: owner })
-            const { partners } = await this.contractInstance.getWebshopData(webshop1, { from: owner })
-
+            let isPartner = await this.contractInstance.isWebshopPartner(webshop1, targetPartners[0], { from: owner })
             assert.deepEqual(isPartner, true)
-            assert.deepEqual(partners, [webshop2, accounts[4], accounts[5], accounts[9], accounts[7], accounts[8], accounts[6]])
+
+            isPartner = await this.contractInstance.isWebshopPartner(webshop1, targetPartners[1], { from: owner })
+            assert.deepEqual(isPartner, true)
+
+            const { partners } = await this.contractInstance.getWebshopData(webshop1, { from: owner })
+            assert.deepEqual(partners, [webshop2, accounts[4], accounts[5], accounts[9], accounts[8], accounts[7], accounts[6]])
         })
     })
 
@@ -298,13 +307,16 @@ contract('Smart voucher contract tests', (accounts) => {
         it('Partner sign and redeem voucher', async () => {
             const partner = webshop2
 
+            const canRedeem = await this.contractInstance.webshopAllowedRedeem(partner, '1')
+            assert.deepEqual(canRedeem.toString(), 'true')
+
             const redeemAmount = ether('3').toString()
             await redeemVoucher(partner, redeemAmount, '1', webshop2PK)
         })
 
         it('Remove partner and check his redeem action', async () => {
             const partner = webshop2
-            await removePartner(webshop1, partner, webshop1PK)
+            await removePartners(webshop1, [partner], webshop1PK)
 
             const voucherData = await this.contractInstance.getVoucherByWebshop(webshop1, '1', { from: owner })
             const webshopData = await this.contractInstance.getWebshopData(webshop2, { from: owner })
@@ -318,9 +330,12 @@ contract('Smart voucher contract tests', (accounts) => {
 
             assert.deepEqual(signerAddressByContract, webshop2)
 
+            const canRedeem = await this.contractInstance.webshopAllowedRedeem(partner, id)
+            assert.deepEqual(canRedeem.toString(), 'false')
+
             await expectRevert(
                 this.contractInstance.redeem(partner, redeemAmount, id, nonce, signature, { from: signer }),
-                'redeem: not allowed webshop'
+                'redeem: Not allowed webshop.'
             )
         })
     })
