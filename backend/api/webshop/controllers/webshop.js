@@ -82,18 +82,21 @@ module.exports = {
         }
     },
 
-    async addPartner(ctx) {
+    async addPartners(ctx) {
         try {
-            const { webshopAddr, partnerAddr, nonce, signature } = ctx.request.body
+            const { webshopAddr, partners, nonce, signature } = ctx.request.body
 
             if (!webshopAddr) throw { message: texts.missing_webshop }
-            if (!partnerAddr) throw { message: texts.missing_partner }
+            if (!partners) throw { message: texts.missing_partners }
             if (!nonce) throw { message: texts.missing_nonce }
             if (!signature) throw { message: texts.missing_signature }
-
-            if (!strapi.hook.web3Controller.isAddress(webshopAddr)) throw { message: texts.invalid_webshop }
-            if (!strapi.hook.web3Controller.isAddress(partnerAddr)) throw { message: texts.invalid_partner }
             if (!strapi.hook.web3Controller.isSignedData(signature)) throw { message: texts.invalid_signature }
+            if (!strapi.hook.web3Controller.isAddress(webshopAddr)) throw { message: texts.invalid_webshop }
+
+            for (let index = 0; index < partners.length; index++) {
+                const partnerAddr = partners[index]
+                if (!strapi.hook.web3Controller.isAddress(partnerAddr)) throw { message: `${texts.invalid_partner}: ${partnerAddr}` }
+            }
 
             // Find webshop
             const webshop = await strapi.services.webshop.findOne({ 'wallet': webshopAddr })
@@ -105,19 +108,14 @@ module.exports = {
                 throw { message: texts.blocked_webshop }
             }
 
-            // Find partner
-            const partner = await strapi.services.webshop.findOne({ 'wallet': partnerAddr })
+            // Send tx to smart contract
+            await strapi.hook.web3Controller.addPartners({webshopAddr, partners, nonce, signature})
 
-            // Validate partner exist
-            if (!partner) {
-                throw { message: texts.partner_not_exists }
-            } else if (partner.blocked) {
-                throw { message: texts.blocked_partner }
-            }
+            // Find partners
+            const dbPartners = await strapi.services.webshop.find({ 'wallet': partners })
+            const dbPartnersIds = dbPartners.map(p => p.id)
 
-            await strapi.hook.web3Controller.addPartner({webshopAddr, partnerAddr, nonce, signature})
-
-            const updatedPartners = JSON.stringify({ publishers: [...webshop.publishers, partner.id] })
+            const updatedPartners = JSON.stringify({ publishers: [...webshop.publishers, dbPartnersIds] })
             await strapi.services.webshop.update({ id: webshop.id }, updatedPartners)
 
             ctx.send({ ok: true })
@@ -132,18 +130,21 @@ module.exports = {
         }
     },
 
-    async removePartner(ctx) {
+    async removePartners(ctx) {
         try {
-            const { webshopAddr, partnerAddr, nonce, signature } = ctx.request.body
+            const { webshopAddr, partners, nonce, signature } = ctx.request.body
 
             if (!webshopAddr) throw { message: texts.missing_webshop }
-            if (!partnerAddr) throw { message: texts.missing_partner }
+            if (!partners) throw { message: texts.missing_partners }
             if (!nonce) throw { message: texts.missing_nonce }
             if (!signature) throw { message: texts.missing_signature }
-
-            if (!strapi.hook.web3Controller.isAddress(webshopAddr)) throw { message: texts.invalid_webshop }
-            if (!strapi.hook.web3Controller.isAddress(partnerAddr)) throw { message: texts.invalid_partner }
             if (!strapi.hook.web3Controller.isSignedData(signature)) throw { message: texts.invalid_signature }
+            if (!strapi.hook.web3Controller.isAddress(webshopAddr)) throw { message: texts.invalid_webshop }
+
+            for (let index = 0; index < partners.length; index++) {
+                const partnerAddr = partners[index]
+                if (!strapi.hook.web3Controller.isAddress(partnerAddr)) throw { message: `${texts.invalid_partner}: ${partnerAddr}` }
+            }
 
             // Find webshop
             const webshop = await strapi.services.webshop.findOne({ 'wallet': webshopAddr })
@@ -155,17 +156,13 @@ module.exports = {
               throw { message: texts.blocked_webshop }
             }
 
-            // Find partner
-            const partner = await strapi.services.webshop.findOne({ 'wallet': partnerAddr })
+            await strapi.hook.web3Controller.removePartners({webshopAddr, partners, nonce, signature})
 
-            // Validate partner exist (can be removed even if partner is blocked)
-            if (!partner) {
-              throw { message: texts.partner_not_exists }
-            }
+            // Find partners
+            const dbPartners = await strapi.services.webshop.find({ 'wallet': partners })
+            const dbPartnersIds = dbPartners.map(p => p.id)
 
-            await strapi.hook.web3Controller.removePartner({webshopAddr, partnerAddr, nonce, signature})
-
-            let updatedPartners = webshop.publishers.filter(el => el.id !== partner.id)
+            let updatedPartners = webshop.publishers.filter(el => !dbPartnersIds.includes(el))
             updatedPartners = JSON.stringify({ publishers: updatedPartners })
             await strapi.services.webshop.update({ id: webshop.id }, updatedPartners)
 

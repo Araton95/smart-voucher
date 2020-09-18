@@ -139,7 +139,11 @@ module.exports = {
                 throw { message: texts.blocked_voucher }
             }
 
-            console.log('WEBSHOP =>', webshop)
+            const allowedRedeem = await strapi.hook.web3Controller.allowedToRedeem(webshopAddr, voucherId)
+            if (!allowedRedeem) {
+                throw { message: texts.not_allowed_redeem }
+            }
+
             // Send 200 `ok`
             ctx.send({ voucherId })
         } catch (error) {

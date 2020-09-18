@@ -34,16 +34,16 @@
     },
     {
       "method": "POST",
-      "path": "/webshops/addPartner",
-      "handler": "webshop.addPartner",
+      "path": "/webshops/addPartners",
+      "handler": "webshop.addPartners",
       "config": {
         "policies": []
       }
     },
     {
       "method": "POST",
-      "path": "/webshops/removePartner",
-      "handler": "webshop.removePartner",
+      "path": "/webshops/removePartners",
+      "handler": "webshop.removePartners",
       "config": {
         "policies": []
       }

@@ -41,20 +41,20 @@ module.exports = strapi => {
       }
     },
 
-    async addPartner(data) {
+    async addPartners(data) {
       try {
-        const { webshopAddr, partnerAddr, nonce, signature } = data
-        const contractMethod = this.defaults.contract.methods.addPartner(webshopAddr, partnerAddr, nonce, signature)
+        const { webshopAddr, partners, nonce, signature } = data
+        const contractMethod = this.defaults.contract.methods.addPartners(webshopAddr, partners, nonce, signature)
         return this._signAndSend(contractMethod)
       } catch (error) {
         throw error
       }
     },
 
-    async removePartner(data) {
+    async removePartners(data) {
       try {
-        const { webshopAddr, partnerAddr, nonce, signature } = data
-        const contractMethod = this.defaults.contract.methods.removePartner(webshopAddr, partnerAddr, nonce, signature)
+        const { webshopAddr, partners, nonce, signature } = data
+        const contractMethod = this.defaults.contract.methods.removePartners(webshopAddr, partners, nonce, signature)
         return this._signAndSend(contractMethod)
       } catch (error) {
         throw error
@@ -125,6 +125,14 @@ module.exports = strapi => {
       } catch (error) {
         throw error
       }
+    },
+
+    async allowedToRedeem(webshopAddr, voucherId) {
+        try {
+          return await this.defaults.contract.methods.webshopAllowedRedeem(webshopAddr, voucherId)
+        } catch (error) {
+          throw error
+        }
     },
 
     async getWebshopData(address) {

@@ -8,7 +8,7 @@ module.exports = {
     blocked_webshop: 'Webshop is blocked',
 
     // Partner
-    missing_partner: 'Partner address is missing',
+    missing_partners: 'Partner addresses are missing',
     invalid_partner: 'Invalid partner address',
     partner_not_exists: 'Webshop with provided partner wallet not found',
     blocked_partner: 'Partner is blocked',
@@ -33,6 +33,7 @@ module.exports = {
 
     // Voucher code
     missing_voucher_code: 'Voucher code is missing',
+    not_allowed_redeem: 'Voucher not allowed to redeem',
 
     // Amount
     missing_amount: 'Amount is missing',
