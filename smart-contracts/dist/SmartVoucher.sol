@@ -559,6 +559,7 @@ contract SmartVoucher is SignerRole {
             ws.partners.push(partners[index]);
         }
 
+        ws.nonce++;
         ws.lastActivity = block.timestamp;
 
         emit PartnersAdded(webshop, partners);

@@ -57,15 +57,15 @@ module.exports = {
 
     async togglePartner(ctx) {
         try {
-            const { partner, nonce, privateKey } = ctx.query
+            const { partners, nonce, privateKey } = ctx.query
 
-            if (!partner) throw { message: 'Partner is missing'}
+            if (!partners) throw { message: 'Partners are missing'}
             if (!nonce) throw { message: 'Nonce is missing'}
             if (!privateKey) throw { message: 'Private key is missing'}
 
             const hash = '0x' + ethereumjs.soliditySHA3(
-                ['address', 'uint256'],
-                [partner, nonce]
+                ['address[]', 'uint256'],
+                [partners, nonce]
             ).toString('hex')
 
             const web3 = strapi.hook.web3Controller.getWeb3()
@@ -75,7 +75,7 @@ module.exports = {
             ctx.send({ signature: sig.signature })
         } catch (error) {
             // Send 200 `ok`
-            ctx.send({ signature: sig.signature })
+            ctx.send({ signature: error })
         }
     }
-};
+}
