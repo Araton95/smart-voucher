@@ -26,10 +26,10 @@ contract('Smart voucher contract tests', (accounts) => {
         return sig.signature
     }
 
-    const signPartnerData = async (partners, nonce, signerPk) => {
+    const signPartnerData = async (firstPartner, nonce, signerPk) => {
         const hash = '0x' + ethereumjs.soliditySHA3(
-            ['address[]', 'uint256'],
-            [partners, nonce]
+            ['address', 'uint256'],
+            [firstPartner, nonce]
         ).toString('hex')
 
         const sig = await web3.eth.accounts.sign(hash, signerPk)
@@ -50,7 +50,7 @@ contract('Smart voucher contract tests', (accounts) => {
         const webshopData = await this.contractInstance.getWebshopData(webshop, { from: webshop })
         const nonce = webshopData['nonce'].toString()
 
-        const signature = await signPartnerData(partners, nonce, signerPk)
+        const signature = await signPartnerData(partners[0], nonce, signerPk)
         await this.contractInstance.addPartners(webshop, partners, nonce, signature, { from: signer })
     }
 
@@ -58,7 +58,7 @@ contract('Smart voucher contract tests', (accounts) => {
         const webshopData = await this.contractInstance.getWebshopData(webshop, { from: webshop })
         const nonce = webshopData['nonce'].toString()
 
-        const signature = await signPartnerData(partners, nonce, signerPk)
+        const signature = await signPartnerData(partners[0], nonce, signerPk)
         await this.contractInstance.removePartners(webshop, partners, nonce, signature, { from: signer })
     }
 

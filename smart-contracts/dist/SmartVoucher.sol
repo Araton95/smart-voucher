@@ -548,7 +548,7 @@ contract SmartVoucher is SignerRole {
         require(partners.length != 0, "addPartners: Partners not found address.");
         require(_webshops[webshop].nonce == nonce, "addPartners: Nonce is not correct.");
 
-        address signer = getSignerAddress(partners, nonce, signature);
+        address signer = getSignerAddress(partners[0], nonce, signature);
         require(signer == webshop, "addPartners: Signed data is not correct.");
 
         Webshop storage ws = _webshops[webshop];
@@ -575,7 +575,7 @@ contract SmartVoucher is SignerRole {
         require(partners.length != 0, "removePartners: Partners not found.");
         require(_webshops[webshop].nonce == nonce, "removePartners: nonce is not correct.");
 
-        address signer = getSignerAddress(partners, nonce, signature);
+        address signer = getSignerAddress(partners[0], nonce, signature);
         require(signer == webshop, "removePartners: Signed data is not correct.");
 
         Webshop storage ws = _webshops[webshop];
@@ -643,13 +643,13 @@ contract SmartVoucher is SignerRole {
     }
 
     function getSignerAddress(
-        address[] memory partners,
+        address firstPartner,
         uint256 nonce,
         bytes memory signature
     ) public pure returns (address) {
         bytes32 dataHash = keccak256(
             abi.encodePacked(
-                partners,
+                firstPartner,
                 nonce
             )
         );
