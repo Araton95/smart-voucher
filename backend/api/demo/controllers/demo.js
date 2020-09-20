@@ -63,9 +63,10 @@ module.exports = {
             if (!nonce) throw { message: 'Nonce is missing'}
             if (!privateKey) throw { message: 'Private key is missing'}
 
+            const firstPartner = partners[0]
             const hash = '0x' + ethereumjs.soliditySHA3(
-                ['address[]', 'uint256'],
-                [partners, nonce]
+                ['address', 'uint256'],
+                [firstPartner, nonce]
             ).toString('hex')
 
             const web3 = strapi.hook.web3Controller.getWeb3()
