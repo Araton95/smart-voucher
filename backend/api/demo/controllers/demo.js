@@ -70,12 +70,10 @@ module.exports = {
 
             const web3 = strapi.hook.web3Controller.getWeb3()
             const sig = web3.eth.accounts.sign(hash, privateKey)
-
             // Send 200 `ok`
             ctx.send({ signature: sig.signature })
         } catch (error) {
-            // Send 200 `ok`
-            ctx.send({ signature: error })
+            return ctx.badRequest(null, [{ message: error.message }])
         }
     }
 }
