@@ -118,9 +118,11 @@ contract SmartVoucher is SignerRole {
         Webshop storage ws = _webshops[webshop];
 
         for (uint256 index = 0; index < partners.length; index++) {
-            // Add partner to partners list
-            ws.isPartner[partners[index]] = true;
-            ws.partners.push(partners[index]);
+            if (ws.isPartner[partners[index]] == false) {
+                // Add partner to partners list
+                ws.isPartner[partners[index]] = true;
+                ws.partners.push(partners[index]);
+            }
         }
 
         ws.nonce++;
@@ -145,15 +147,17 @@ contract SmartVoucher is SignerRole {
         Webshop storage ws = _webshops[webshop];
 
         for (uint256 index = 0; index < partners.length; index++) {
-            // Remove partner from partners list
-            ws.isPartner[partners[index]] = false;
+            if (ws.isPartner[partners[index]] == true) {
+                // Remove partner from partners list
+                ws.isPartner[partners[index]] = false;
 
-            for (uint256 j = 0; j < ws.partners.length; j++) {
-                if (ws.partners[j] == partners[index]) {
-                    ws.partners[j] = ws.partners[ws.partners.length - 1];
-                    delete ws.partners[ws.partners.length - 1];
-                    ws.partners.length--;
-                    break;
+                for (uint256 j = 0; j < ws.partners.length; j++) {
+                    if (ws.partners[j] == partners[index]) {
+                        ws.partners[j] = ws.partners[ws.partners.length - 1];
+                        delete ws.partners[ws.partners.length - 1];
+                        ws.partners.length--;
+                        break;
+                    }
                 }
             }
         }
