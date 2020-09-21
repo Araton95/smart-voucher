@@ -115,7 +115,7 @@ module.exports = {
             const dbPartners = await strapi.services.webshop.find({ 'wallet': partners })
             const dbPartnersIds = dbPartners.map(p => p.id)
 
-            const updatedPartners = JSON.stringify({ publishers: [...webshop.publishers, dbPartnersIds] })
+            const updatedPartners = JSON.stringify({ publishers: [...webshop.publishers, ...dbPartnersIds] })
             await strapi.services.webshop.update({ id: webshop.id }, updatedPartners)
 
             ctx.send({ ok: true })
@@ -162,9 +162,11 @@ module.exports = {
             const dbPartners = await strapi.services.webshop.find({ 'wallet': partners })
             const dbPartnersIds = dbPartners.map(p => p.id)
 
-            let updatedPartners = webshop.publishers.filter(el => !dbPartnersIds.includes(el))
-            updatedPartners = JSON.stringify({ publishers: updatedPartners })
-            await strapi.services.webshop.update({ id: webshop.id }, updatedPartners)
+            const updatedPartners = webshop.publishers.filter(el => !dbPartnersIds.includes(el.id))
+            let updatePartnersIds = updatedPartners.map(p => p.id)
+            updatePartnersIds = JSON.stringify({ publishers: updatePartnersIds })
+
+            await strapi.services.webshop.update({ id: webshop.id }, updatePartnersIds)
 
             ctx.send({ ok: true })
         } catch (error) {
