@@ -18,6 +18,7 @@ module.exports = () => {
       amount /= 100 // Divide cents to USD
       amount = parseFloat(amount).toLocaleString('en-US', { style: 'currency', currency: 'USD' })
       amount = amount.substring(1) // remove $ symbol at the start
+      amount = amount.replace(/,/g, '') // all commas
       return amount
     },
 

@@ -31,8 +31,10 @@ module.exports = {
                 throw { message: texts.blocked_webshop }
             }
 
+            // Get the last voucher id from contract
+            const voucherId = (await strapi.hook.web3Controller.getVouchersCount()).toString()
+
             // Send transaction to smart contract
-            const voucherId = await strapi.hook.web3Controller.getVouchersCount()
             await strapi.hook.web3Controller.createVoucher({ webshopAddr, amount, nonce, signature })
 
             // Save voucher to DB
@@ -51,11 +53,13 @@ module.exports = {
         } catch (error) {
             let { message } = error
 
-            if (message && message.length && message.split(":").length > 1) {
+            if (!message) {
+                message = "Something goes wrong. Please try again later"
+            } else if (message.length && message.split(":").length > 1) {
                 message = strapi.hook.helpers.trimContractError(message)
             }
 
-            return  ctx.badRequest(null, message)
+            return ctx.badRequest(null, message)
         }
     },
 
@@ -106,7 +110,9 @@ module.exports = {
         } catch (error) {
             let { message } = error
 
-            if (message && message.length && message.split(":").length > 1) {
+            if (!message) {
+                message = "Something goes wrong. Please try again later"
+            } else if (message.length && message.split(":").length > 1) {
                 message = strapi.hook.helpers.trimContractError(message)
             }
 
@@ -149,7 +155,9 @@ module.exports = {
         } catch (error) {
             let { message } = error
 
-            if (message && message.length && message.split(":").length > 1) {
+            if (!message) {
+                message = "Something goes wrong. Please try again later"
+            } else if (message.length && message.split(":").length > 1) {
                 message = strapi.hook.helpers.trimContractError(message)
             }
 
