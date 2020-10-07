@@ -35,7 +35,10 @@ module.exports = {
             const voucherId = (await strapi.hook.web3Controller.getVouchersCount()).toString()
 
             // Send transaction to smart contract
-            await strapi.hook.web3Controller.createVoucher({ webshopAddr, amount, nonce, signature })
+            const tx = await strapi.hook.web3Controller.createVoucher({ webshopAddr, amount, nonce, signature })
+
+            console.log('Create new voucher tx to smart contract:\n', tx.transactionHash)
+            console.log('Tx mined!')
 
             // Save voucher to DB
             await strapi.services.voucher.create({
@@ -93,7 +96,10 @@ module.exports = {
             }
 
             // Send transaction to smart contract
-            await strapi.hook.web3Controller.redeemVoucher({ webshopAddr, amount, voucherId, nonce, signature })
+            const tx = await strapi.hook.web3Controller.redeemVoucher({ webshopAddr, amount, voucherId, nonce, signature })
+
+            console.log('Redeem voucher tx:\n', tx.transactionHash)
+            console.log('Tx mined!')
 
             // Fetch updated data from contract
             const voucherDataContract = await strapi.hook.web3Controller.getVoucherData(voucherId)
