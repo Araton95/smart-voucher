@@ -1,0 +1,12 @@
+{
+  "require":{
+    "w-sys/smart-voucher": "@dev",
+    "sop/asn1": "^3.3",
+    "sop/crypto-encoding": "^0.2.0",
+    "sop/crypto-types": "^0.2.1",
+    "kornrunner/keccak": "^1.0",
+    "symfony/dotenv": "^4.0",
+    "sc0vu/web3.php": "dev-master",
+    "kornrunner/solidity": "@dev"
+  }
+}

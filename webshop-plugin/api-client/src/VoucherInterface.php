@@ -116,4 +116,15 @@ interface VoucherInterface {
    */
  public function setCurrentAmount(float $amount);
  
+ /**
+  * getVoucherCode - return existing voucher code.
+  * @return
+  */
+ public function getVoucherCode();
+ 
+ /**
+  * setVoucherCode - set voucher code.
+  * @param string $code
+  */
+ public function setVoucherCode(string $code);
 }

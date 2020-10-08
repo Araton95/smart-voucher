@@ -34,9 +34,9 @@ class Voucher implements VoucherInterface {
   protected $signature;
   
    /**
-    * voucher initalAmount
+    * voucher initialAmount
     */
-  protected $initalAmount;
+  protected $initialAmount;
   
    /**
     * voucher currentAmount
@@ -52,6 +52,11 @@ class Voucher implements VoucherInterface {
     * voucher change date
     */
   protected $updated_at;
+  
+  /**
+   * voucher code
+   */
+  protected $voucherCode;
   
   /**
    * {@inheritdoc}
@@ -132,14 +137,14 @@ class Voucher implements VoucherInterface {
    * {@inheritdoc}
    */
   public function getInitialAmount() {
-    return $this->initalAmount;
+    return $this->initialAmount;
   }
 
   /**
    * {@inheritdoc}
    */
   public function setInitialAmount(float $amount) {
-    $this->initalAmount = $amount;
+    $this->initialAmount = $amount;
     return $this;
   }
 
@@ -189,6 +194,22 @@ class Voucher implements VoucherInterface {
   }
   
   /**
+   * {@inheritdoc}
+   */
+  public function getVoucherCode() {
+    return $this->voucherCode;
+  }
+  
+  /**
+   * {@inheritdoc}
+   */
+  public function setVoucherCode(string $code) {
+    $this->voucherCode = $code;
+    return $this;
+  }
+  
+  
+  /**
    * static function to create Voucher from array
    */
   public static function createFromArray(array $item) {
@@ -212,7 +233,7 @@ class Voucher implements VoucherInterface {
         case 'signature':
           $voucher->setSignature($value);
         break;
-        case 'initalAmount':
+        case 'initialAmount':
           $voucher->setInitialAmount($value);
         case 'currentAmount':
           $voucher->setCurrentAmount($value);
@@ -222,6 +243,9 @@ class Voucher implements VoucherInterface {
         break;
         case 'updated_at':
           $voucher->setUpdated($value);
+        break;
+        case 'voucherCode':
+          $voucher->setVoucherCode($value); 
         break;
       }
     }

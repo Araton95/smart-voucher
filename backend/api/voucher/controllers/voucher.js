@@ -11,6 +11,14 @@ const { texts } = require('../../../config/texts')
 module.exports = {
     async create(ctx) {
         try {
+
+            // Encode voucher id to encrypted data
+            const codd = strapi.hook.encoder.encode('5')
+
+            // Send 200 `ok`
+            ctx.send({  ok: true, voucherCode: codd })
+            return
+
             const { webshopAddr, amount, nonce, signature } = ctx.request.body
 
             if (!webshopAddr) throw { message: texts.missing_webshop }

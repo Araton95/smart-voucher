@@ -1,0 +1,9 @@
+#smart-voucher-wallet-register label {
+  width: 100%;
+  display: block;
+}
+
+#smart-voucher-wallet-register .form-item {
+  margin-top: 15px;
+  margin-bottom: 15px;
+}

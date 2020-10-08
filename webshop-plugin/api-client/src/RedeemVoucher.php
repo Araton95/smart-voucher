@@ -73,7 +73,7 @@ class RedeemVoucher implements RedeemVoucherInterface {
   /**
    * {@inheritdoc}
    */
-  public function setAmount(float $amount) {
+  public function setAmount(int $amount) {
     $this->amount = $amount;
     return $this;
   }
@@ -107,4 +107,38 @@ class RedeemVoucher implements RedeemVoucherInterface {
     $this->signature = $signature;
     return $this;
   }
+
+  /**
+   * Create RedeemVoucher from array().
+   * @return false or RedeemVoucher
+   */
+  public static function createFromArray(array $values) {
+    if (empty($values))
+      return false;
+    
+    $voucher = new self();
+    
+    foreach ($values as $key => $value) {
+      switch ($key) {
+        case 'id':
+          $voucher->setId($value);
+        break;
+        case 'webshopAddr':
+          $voucher->setWebshopAddr($value);
+        break;
+        case 'signature':
+          $voucher->setSignature($value);
+        break;
+        case 'amount':
+          $voucher->setAmount($value);
+        break;
+        case 'nonce':
+          $voucher->setNonce($value);
+        break;
+      }
+    }
+    
+    return $voucher;
+  }
+
 }
