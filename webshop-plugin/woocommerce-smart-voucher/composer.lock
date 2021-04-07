@@ -363,21 +363,21 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/kornrunner/php-solidity.git",
-                "reference": "c237c5c75f43f0b7617058254ed6e927a856ab05"
+                "reference": "a45cc5e8f811ae6b58207998baa2369b269939be"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/kornrunner/php-solidity/zipball/c237c5c75f43f0b7617058254ed6e927a856ab05",
-                "reference": "c237c5c75f43f0b7617058254ed6e927a856ab05",
+                "url": "https://api.github.com/repos/kornrunner/php-solidity/zipball/a45cc5e8f811ae6b58207998baa2369b269939be",
+                "reference": "a45cc5e8f811ae6b58207998baa2369b269939be",
                 "shasum": ""
             },
             "require": {
                 "kornrunner/keccak": "^1.0",
-                "php": ">=7.2",
+                "php": ">=7.3",
                 "simplito/bn-php": "^1.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "^8.2"
+                "phpunit/phpunit": "^9"
             },
             "type": "library",
             "autoload": {
@@ -401,7 +401,7 @@
                 "ethereum",
                 "solidity"
             ],
-            "time": "2020-08-24T14:30:21+00:00"
+            "time": "2021-03-29T15:20:06+00:00"
         },
         {
             "name": "mdanter/ecc",
@@ -522,16 +522,16 @@
         },
         {
             "name": "phpseclib/phpseclib",
-            "version": "2.0.29",
+            "version": "2.0.31",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpseclib/phpseclib.git",
-                "reference": "497856a8d997f640b4a516062f84228a772a48a8"
+                "reference": "233a920cb38636a43b18d428f9a8db1f0a1a08f4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/497856a8d997f640b4a516062f84228a772a48a8",
-                "reference": "497856a8d997f640b4a516062f84228a772a48a8",
+                "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/233a920cb38636a43b18d428f9a8db1f0a1a08f4",
+                "reference": "233a920cb38636a43b18d428f9a8db1f0a1a08f4",
                 "shasum": ""
             },
             "require": {
@@ -539,7 +539,7 @@
             },
             "require-dev": {
                 "phing/phing": "~2.7",
-                "phpunit/phpunit": "^4.8.35|^5.7|^6.0",
+                "phpunit/phpunit": "^4.8.35|^5.7|^6.0|^9.4",
                 "squizlabs/php_codesniffer": "~2.0"
             },
             "suggest": {
@@ -623,7 +623,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2020-09-08T04:24:43+00:00"
+            "time": "2021-04-06T13:56:45+00:00"
         },
         {
             "name": "psr/http-message",
@@ -1513,12 +1513,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/w-sys/smart-voucher.git",
-                "reference": "d9ae3229c5f42c6bbaf9b07aa9d082677bf9254a"
+                "reference": "425443bdd3d0e30e7910193f2c030b2b105da66c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/w-sys/smart-voucher/zipball/d9ae3229c5f42c6bbaf9b07aa9d082677bf9254a",
-                "reference": "d9ae3229c5f42c6bbaf9b07aa9d082677bf9254a",
+                "url": "https://api.github.com/repos/w-sys/smart-voucher/zipball/425443bdd3d0e30e7910193f2c030b2b105da66c",
+                "reference": "425443bdd3d0e30e7910193f2c030b2b105da66c",
                 "shasum": ""
             },
             "require": {
@@ -1551,7 +1551,7 @@
             ],
             "description": "Smart Voucher API Client",
             "homepage": "https://documenter.getpostman.com/view/6846240/T1DjjK9k?version=latest",
-            "time": "2020-09-16T19:42:53+00:00"
+            "time": "2020-10-05T10:01:23+00:00"
         }
     ],
     "packages-dev": [],
